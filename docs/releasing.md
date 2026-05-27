@@ -2,23 +2,34 @@
 
 Maintainer checklist for publishing **`ciphersins`** and **`@ciphersins/core`** to npm.
 
+npm publish runs **locally** (not in GitHub Actions). The release workflow only verifies the tag and creates a GitHub Release.
+
 ## Prerequisites
 
 - npm account with publish access to both package names (`ciphersins`, `@ciphersins/core`)
-- GitHub repo admin (for secrets and tags)
 - Local clone on `main` with a clean working tree
+- [pnpm](https://pnpm.io/) 9.x (matches `packageManager` in root `package.json`)
 
 ## One-time setup
 
-1. Create an npm access token (Automation or Publish) at [npmjs.com](https://www.npmjs.com/).
-2. Add it to GitHub: **Settings → Secrets and variables → Actions → `NPM_TOKEN`**.
+Log in to npm on your machine:
+
+```bash
+npm login
+```
+
+Or export a token for the session:
+
+```bash
+export NODE_AUTH_TOKEN=npm_...
+```
 
 ## Pre-release verification
 
 From repo root:
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 npm run verify
 npm run pack:check
 ```
@@ -35,7 +46,39 @@ npm run pack:check
 3. Add a `[x.y.z]` section to [CHANGELOG.md](../CHANGELOG.md).
 4. Commit, push to `main`, and ensure CI is green.
 
-## Publish via GitHub tag (recommended)
+## Publish to npm (local)
+
+```bash
+npm run publish:npm
+```
+
+This script:
+
+1. Checks root/core/cli versions match
+2. Verifies npm login (`npm whoami` or `NODE_AUTH_TOKEN`)
+3. Runs `npm run verify`
+4. Runs `npm run pack:check`
+5. Publishes `@ciphersins/core`, then `ciphersins` (with `--provenance` by default)
+
+### Options
+
+```bash
+npm run publish:npm -- --dry-run        # pack:check + pnpm publish --dry-run only
+npm run publish:npm -- --skip-verify    # skip full verify (not recommended)
+npm run publish:npm -- --no-provenance  # omit Sigstore attestation
+```
+
+Manual equivalent:
+
+```bash
+npm run build
+pnpm --filter @ciphersins/core publish --access public --no-git-checks --provenance
+pnpm --filter ciphersins publish --access public --no-git-checks --provenance
+```
+
+## GitHub Release (tag)
+
+After npm packages are live:
 
 ```bash
 git tag v1.0.0
@@ -44,39 +87,28 @@ git push origin v1.0.0
 
 The [release workflow](../.github/workflows/release.yml) on tag `v*.*.*`:
 
-1. Runs full `npm run verify`
-2. Dry-runs `npm pack` for both packages
-3. Publishes `@ciphersins/core` then `ciphersins` with **`--provenance`** (Sigstore attestation; requires `id-token: write`)
-4. Creates a GitHub Release with auto-generated notes
+1. Runs CI checks (`format`, `typecheck`, `build`, `test:ci`, `smoke:cli`)
+2. Runs `pack:check`
+3. Creates a GitHub Release with auto-generated notes
 
 Tag must match package version (e.g. tag `v1.0.0` → package version `1.0.0`).
 
-## Manual publish (fallback)
-
-```bash
-npm run build
-pnpm --filter @ciphersins/core publish --access public --no-git-checks --provenance
-pnpm --filter ciphersins publish --access public --no-git-checks --provenance
-```
-
-Set `NODE_AUTH_TOKEN` to your npm token.
-
 ## After publish
 
-- Verify installs:
+Verify installs:
 
-  ```bash
-  npx ciphersins@latest --version
-  npm view @ciphersins/core version
-  ```
-
-- Update README badges if needed (CI badge refreshes on its own after the next workflow run).
+```bash
+npx ciphersins@latest --version
+npm view @ciphersins/core version
+```
 
 ## Troubleshooting
 
 | Issue                                       | Fix                                                                                |
 | ------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ENEEDAUTH` / need auth                     | `npm login` or `export NODE_AUTH_TOKEN=npm_...` before `npm run publish:npm`       |
 | `402 Payment Required` / package name taken | Ensure npm org/user owns `ciphersins` and `@ciphersins/core`                       |
 | CLI publish fails on `@ciphersins/core`     | Publish core first; keep `workspace:*` in git — pnpm publish resolves it to semver |
 | Tag push does nothing                       | Check Actions tab; tag must match `v*.*.*` pattern                                 |
-| Provenance errors                           | Requires `id-token: write` (already set in workflow)                               |
+| Provenance errors locally                   | Use `--no-provenance`, or npm 9+ with `npm login`                                  |
+| `pnpm install --frozen-lockfile` fails      | CLI must use `workspace:*` for `@ciphersins/core`; do not commit semver there      |

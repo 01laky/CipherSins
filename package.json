@@ -50,6 +50,7 @@
 		"format:fix": "prettier --write .",
 		"smoke:cli": "node scripts/smoke-cli.mjs",
 		"pack:check": "node scripts/pack-check.mjs",
+		"publish:npm": "node scripts/publish.mjs",
 		"diagrams:build": "node scripts/build-diagrams.mjs",
 		"clean": "node -e \"import('node:fs/promises').then((fs)=>Promise.all(['dist','coverage','junit.xml','test-results'].map((p)=>fs.rm(p,{recursive:true,force:true}))))\"",
 		"verify": "npm run format && npm run typecheck && npm run build && npm test && npm run smoke:cli"
