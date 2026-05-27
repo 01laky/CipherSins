@@ -1,0 +1,44 @@
+import { spawnSync, type SpawnSyncReturns } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const testDir = path.dirname(fileURLToPath(import.meta.url));
+export const rootDir = path.resolve(testDir, "../..");
+export const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+
+export const jwt01BadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
+export const jwt01GoodDir = path.join(rootDir, "fixtures/cs-jwt-01/good");
+export const jwt02BadDir = path.join(rootDir, "fixtures/cs-jwt-02/bad");
+export const jwt03BadDir = path.join(rootDir, "fixtures/cs-jwt-03/bad");
+export const jwt03BadFile = path.join(
+	rootDir,
+	"fixtures/cs-jwt-03/bad/verify-algorithms-none-literal.ts",
+);
+export const jwt04BadDir = path.join(rootDir, "fixtures/cs-jwt-04/bad");
+export const jwt03GoodDir = path.join(rootDir, "fixtures/cs-jwt-03/good");
+export const jwt02GoodDir = path.join(rootDir, "fixtures/cs-jwt-02/good");
+export const hash02BadDir = path.join(rootDir, "fixtures/cs-hash-02/bad");
+export const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
+export const ciFixtureDir = path.join(rootDir, "test/fixtures/ci");
+
+export const allBadDirs = [
+	jwt01BadDir,
+	jwt02BadDir,
+	jwt03BadDir,
+	jwt04BadDir,
+	path.join(rootDir, "fixtures/cs-cmp-01/bad"),
+	path.join(rootDir, "fixtures/cs-rng-01/bad"),
+	path.join(rootDir, "fixtures/cs-hash-01/bad"),
+	path.join(rootDir, "fixtures/cs-hash-02/bad"),
+];
+
+export function cli(
+	args: string[],
+	options: { cwd?: string } = {},
+): SpawnSyncReturns<string> {
+	return spawnSync(process.execPath, [cliEntry, "scan", ...args], {
+		encoding: "utf8",
+		cwd: options.cwd ?? rootDir,
+		maxBuffer: 10 * 1024 * 1024,
+	});
+}

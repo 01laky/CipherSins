@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,10 +26,16 @@ function assert(condition, message) {
 
 assert(fs.existsSync(cliEntry), `missing CLI build output at ${cliEntry}`);
 
-const direct = spawnSync(process.execPath, [cliEntry, "scan", fixtureDir], {
-	encoding: "utf8",
-	cwd: rootDir,
-});
+const noConfig = ["--no-config"];
+
+const direct = spawnSync(
+	process.execPath,
+	[cliEntry, "scan", ...noConfig, fixtureDir],
+	{
+		encoding: "utf8",
+		cwd: rootDir,
+	},
+);
 
 assert(
 	direct.status === 0,
@@ -49,10 +56,14 @@ for (const [dir, ruleId] of [
 	[hashBadDir, "CS-HASH-01"],
 	[hash02BadDir, "CS-HASH-02"],
 ]) {
-	const result = spawnSync(process.execPath, [cliEntry, "scan", dir], {
-		encoding: "utf8",
-		cwd: rootDir,
-	});
+	const result = spawnSync(
+		process.execPath,
+		[cliEntry, "scan", ...noConfig, dir],
+		{
+			encoding: "utf8",
+			cwd: rootDir,
+		},
+	);
 	assert(
 		result.status === 0,
 		`${ruleId} bad scan exit ${result.status}\n${result.stderr}`,
@@ -73,10 +84,14 @@ for (const goodDir of [
 	path.join(rootDir, "fixtures/cs-hash-01/good"),
 	path.join(rootDir, "fixtures/cs-hash-02/good"),
 ]) {
-	const goodScan = spawnSync(process.execPath, [cliEntry, "scan", goodDir], {
-		encoding: "utf8",
-		cwd: rootDir,
-	});
+	const goodScan = spawnSync(
+		process.execPath,
+		[cliEntry, "scan", ...noConfig, goodDir],
+		{
+			encoding: "utf8",
+			cwd: rootDir,
+		},
+	);
 	assert(
 		goodScan.status === 0,
 		`good scan exit ${goodScan.status} for ${goodDir}\n${goodScan.stderr}`,
@@ -87,10 +102,79 @@ for (const goodDir of [
 	);
 }
 
+const jwt03FailOn = spawnSync(
+	process.execPath,
+	[cliEntry, "scan", ...noConfig, "--fail-on", "high", jwt03BadDir],
+	{
+		encoding: "utf8",
+		cwd: rootDir,
+	},
+);
+assert(
+	jwt03FailOn.status === 1,
+	`jwt-03 fail-on high exit ${jwt03FailOn.status}\n${jwt03FailOn.stderr}`,
+);
+
+const jsonSmoke = spawnSync(
+	process.execPath,
+	[
+		cliEntry,
+		"scan",
+		...noConfig,
+		"--format",
+		"json",
+		path.join(jwt03BadDir, "verify-algorithms-none-literal.ts"),
+	],
+	{
+		encoding: "utf8",
+		cwd: rootDir,
+	},
+);
+assert(
+	jsonSmoke.status === 0,
+	`json smoke exit ${jsonSmoke.status}\n${jsonSmoke.stderr}`,
+);
+const jsonDoc = JSON.parse(jsonSmoke.stdout);
+assert(jsonDoc.schemaVersion === 1, "json smoke missing schemaVersion");
+assert(jsonDoc.findings.length > 0, "json smoke expected findings");
+
+const tempDir = fs.mkdtempSync(
+	path.join(os.tmpdir(), "ciphersins-smoke-sarif-"),
+);
+const sarifPath = path.join(tempDir, "nested/out.sarif");
+const sarifSmoke = spawnSync(
+	process.execPath,
+	[
+		cliEntry,
+		"scan",
+		...noConfig,
+		"--format",
+		"sarif",
+		"--output",
+		sarifPath,
+		path.join(jwt03BadDir, "verify-algorithms-none-literal.ts"),
+	],
+	{
+		encoding: "utf8",
+		cwd: rootDir,
+	},
+);
+try {
+	assert(
+		sarifSmoke.status === 0,
+		`sarif smoke exit ${sarifSmoke.status}\n${sarifSmoke.stderr}`,
+	);
+	assert(fs.existsSync(sarifPath), "sarif smoke output file missing");
+	const sarifDoc = JSON.parse(fs.readFileSync(sarifPath, "utf8"));
+	assert(sarifDoc.version === "2.1.0", "sarif smoke invalid version");
+} finally {
+	fs.rmSync(tempDir, { recursive: true, force: true });
+}
+
 const cliBin = path.join(rootDir, "node_modules/.bin/ciphersins");
 assert(fs.existsSync(cliBin), `missing linked bin at ${cliBin}`);
 
-const viaBin = execFileSync(cliBin, ["scan", fixtureDir], {
+const viaBin = execFileSync(cliBin, ["scan", ...noConfig, fixtureDir], {
 	encoding: "utf8",
 	cwd: rootDir,
 });

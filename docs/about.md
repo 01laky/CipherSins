@@ -12,7 +12,7 @@ _Static scanner for JWT, timing, RNG, and password-hashing footguns in Node/TS a
 
 Like **gitleaks for dangerous crypto call patterns** — not secrets buried in strings, but **how your application calls crypto libraries**: decode-only JWT auth, verify without algorithm allowlists, **`none` algorithm bypass**, disabled expiration checks, timing-unsafe token compares, predictable RNG in auth paths, legacy password digests, and weak bcrypt work factors.
 
-## What it finds (v0.8.0)
+## What it finds (v0.9.0)
 
 | Area             | Example mistake                             | Rule       |
 | ---------------- | ------------------------------------------- | ---------- |
@@ -43,7 +43,7 @@ Architecture: [architecture.md](./architecture.md) · CLI: [cli.md](./cli.md)
 
 ## Install & status
 
-**Pre-release 0.8.0** — all eight MVP rules implemented; install from source until **npm publish at v1.0.0**. See [README](../README.md#install).
+**Pre-release 0.9.0** — all eight MVP rules and CLI JSON/SARIF/`--fail-on` infrastructure; install from source until **npm publish at v1.0.0**. See [README](../README.md#install).
 
 ## Maintainer
 

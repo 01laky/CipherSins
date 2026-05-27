@@ -434,6 +434,6 @@ describe("CS-S22 CLI help and version", () => {
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("0.8.0");
+		expect(result.stdout.trim()).toBe("0.9.0");
 	});
 });

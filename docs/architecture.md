@@ -17,7 +17,7 @@ Source paths and globs resolve to scannable files, each file is parsed with the 
 | Rules   | `runRules`, `allRules`                   | Per-file `Rule.run(context)`                         |
 | Output  | `scan`, CLI                              | Severity summary; CLI prints relative path + message |
 
-## Rule registry (v0.8.0)
+## Rule registry (v0.9.0)
 
 Eight MVP rules run in stable order on every scanned file:
 

@@ -29,6 +29,20 @@ export {
 } from "./resolve-files.js";
 export { runRules } from "./run-rules.js";
 export { createEmptySummary, scan, summarizeFindings } from "./scan.js";
+export { formatJson, type FormatJsonOptions } from "./reporting/format-json.js";
+export {
+	formatSarif,
+	type FormatSarifOptions,
+} from "./reporting/format-sarif.js";
+export { findingPrimaryLocationLineHash } from "./reporting/sarif-fingerprint.js";
+export { normalizeSarifForSnapshot } from "./reporting/normalize-sarif-snapshot.js";
+export {
+	isSeverity,
+	severityRank,
+	severityToSarifLevel,
+	summaryExceedsFailOn,
+} from "./reporting/severity.js";
+export { sortFindings } from "./reporting/sort-findings.js";
 export {
 	allRules,
 	csJwt01Rule,

@@ -1,0 +1,106 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+import {
+	discoverConfigPath,
+	loadConfig,
+	loadConfigFile,
+} from "../../packages/cli/src/config/load-config.js";
+import { cli, jwt03BadDir, rootDir } from "./helpers.js";
+
+function withTempDir(prefix: string, run: (dir: string) => void) {
+	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+	try {
+		run(tempDir);
+	} finally {
+		fs.rmSync(tempDir, { recursive: true, force: true });
+	}
+}
+
+describe("CS-CLI config loading", () => {
+	it("CS-CLI-53 temp cwd config failOn high with jwt-03 bad exits 1", () => {
+		withTempDir("ciphersins-cli-config-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ failOn: "high" }),
+			);
+			const result = cli([jwt03BadDir], { cwd: tempDir });
+			expect(result.status).toBe(1);
+		});
+	});
+
+	it("CS-CLI-54 config failOn high with CLI --fail-on critical on jwt-02 bad exits 0", () => {
+		withTempDir("ciphersins-cli-config-override-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ failOn: "high" }),
+			);
+			const result = cli(
+				["--fail-on", "critical", path.join(rootDir, "fixtures/cs-jwt-02/bad")],
+				{ cwd: tempDir },
+			);
+			expect(result.status).toBe(0);
+		});
+	});
+
+	it("CS-CLI-55 loadConfig parses valid JSON", () => {
+		withTempDir("ciphersins-cli-load-", (tempDir) => {
+			const configPath = path.join(tempDir, "ciphersins.config.json");
+			fs.writeFileSync(
+				configPath,
+				JSON.stringify({ include: ["src/**/*.ts"], failOn: "high" }),
+			);
+			const config = loadConfigFile(configPath);
+			expect(config.include).toEqual(["src/**/*.ts"]);
+			expect(config.failOn).toBe("high");
+		});
+	});
+
+	it("CS-CLI-56 malformed JSON config throws invalid config error", () => {
+		withTempDir("ciphersins-cli-bad-json-", (tempDir) => {
+			const configPath = path.join(tempDir, "broken.json");
+			fs.writeFileSync(configPath, "{ not-json");
+			expect(() => loadConfigFile(configPath)).toThrow(/invalid config/);
+		});
+	});
+
+	it("CS-CLI-57 config exclude excludes path from scan", () => {
+		withTempDir("ciphersins-cli-exclude-", (tempDir) => {
+			const srcDir = path.join(tempDir, "src");
+			fs.mkdirSync(srcDir, { recursive: true });
+			fs.copyFileSync(
+				path.join(rootDir, "test/fixtures/ci/src/bad-jwt-decode.ts"),
+				path.join(srcDir, "bad-jwt-decode.ts"),
+			);
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ exclude: ["**/bad-jwt-decode.ts"] }),
+			);
+			const result = cli(["--format", "json", "src"], { cwd: tempDir });
+			expect(result.status).toBe(0);
+			const doc = JSON.parse(result.stdout);
+			expect(doc.findings).toEqual([]);
+		});
+	});
+
+	it("CS-CLI-58 missing config with explicit --config exits 2", () => {
+		const result = cli(["--config", "missing-config.json", jwt03BadDir]);
+		expect(result.status).toBe(2);
+		expect(result.stderr).toMatch(/config file not found/);
+	});
+
+	it("CS-CLI-59 auto-discovers ciphersins.config.json in temp cwd", () => {
+		withTempDir("ciphersins-cli-discover-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ failOn: "high" }),
+			);
+			expect(discoverConfigPath(tempDir)).toBe(
+				path.join(tempDir, "ciphersins.config.json"),
+			);
+			const config = loadConfig({ cwd: tempDir, noConfig: false });
+			expect(config?.failOn).toBe("high");
+		});
+	});
+});

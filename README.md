@@ -1,11 +1,11 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-0.8.0-blue)
+![core](https://img.shields.io/badge/core-0.9.0-blue)
 ![node](https://img.shields.io/badge/node-%3E%3D18-339933)
 ![rules](https://img.shields.io/badge/rules-8%2F8_implemented-9cf)
-![tests](https://img.shields.io/badge/tests-785_passing-brightgreen)
+![tests](https://img.shields.io/badge/tests-928_passing-brightgreen)
 [![ci](https://github.com/01laky/CipherSins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/CipherSins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-pre--release_0.8.0-yellow)
+![status](https://img.shields.io/badge/status-pre--release_0.9.0-yellow)
 
 **Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
 
@@ -13,7 +13,7 @@
 
 Catch `jwt.decode()` without `jwt.verify()` before it reaches production — **not another regex grep on `node_modules`**.
 
-**Status:** Pre-release **`0.8.0`**. Scan pipeline, TypeScript AST parsing, and **all eight MVP rules** are implemented: **CS-JWT-01** (decode without verify), **CS-JWT-02** (verify without explicit `algorithms`), **CS-JWT-03** (**critical** — `none` algorithm bypass on verify/sign), **CS-JWT-04** (medium — `ignoreExpiration: true`), **CS-CMP-01** (timing-unsafe compare on auth material), **CS-RNG-01** (`Math.random` in auth context), **CS-HASH-01** (MD5/SHA1 password hashing), **CS-HASH-02** (weak bcrypt cost). SARIF output and config parsing remain on the roadmap before npm publish. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
+**Status:** Pre-release **`0.9.0`**. Scan pipeline, TypeScript AST parsing, **all eight MVP rules**, and **CLI infrastructure** are implemented: JSON/SARIF output, `--fail-on` CI gating, and partial `ciphersins.config.json` support. Rules: **CS-JWT-01** (decode without verify), **CS-JWT-02** (verify without explicit `algorithms`), **CS-JWT-03** (**critical** — `none` algorithm bypass), **CS-JWT-04** (medium — `ignoreExpiration: true`), **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02**. Per-rule config overrides and npm publish remain for **v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
 
 ---
 
@@ -244,8 +244,8 @@ Use in custom CI steps when you need structured findings before gating a deploy 
 - **Not `npm audit`** — does not report dependency CVEs or transitive package risk.
 - **Not a full SAST suite** — focused MVP rule set for **crypto and auth primitive misuse**.
 - **No cross-file call graphs in v1** — same-file scope per rule unless noted.
-- **Findings do not fail CI exit code in v0.6.x** — `--fail-on` planned for v1.0.0 ([`docs/cli.md`](./docs/cli.md)).
-- **No SARIF / config file parsing yet** — planned before v1.0.0 npm publish.
+- **Findings do not fail CI by default** — use `--fail-on high` (or config `failOn`) for gating ([`docs/cli.md`](./docs/cli.md)).
+- **Partial config only** — per-rule severity overrides planned for v1.0.0.
 
 ---
 
@@ -257,13 +257,13 @@ pnpm install
 pnpm verify
 ```
 
-| Command                            | Description                                                                |
-| ---------------------------------- | -------------------------------------------------------------------------- |
-| `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke                    |
-| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT tests (785 at v0.8.0) |
-| `pnpm exec ciphersins scan [path]` | Run linked CLI                                                             |
-| `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                                      |
-| `pnpm format:fix`                  | Apply Prettier (tabs)                                                      |
+| Command                            | Description                                                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke                                          |
+| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-REP, CS-CLI-EXT (928 at v0.9.0) |
+| `pnpm exec ciphersins scan [path]` | Run linked CLI                                                                                   |
+| `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                                                            |
+| `pnpm format:fix`                  | Apply Prettier (tabs)                                                                            |
 
 Adding a rule: [`docs/development.md#adding-a-rule`](./docs/development.md#adding-a-rule).
 

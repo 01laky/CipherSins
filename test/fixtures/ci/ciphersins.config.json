@@ -1,0 +1,4 @@
+{
+	"failOn": "high",
+	"exclude": ["**/node_modules/**"]
+}

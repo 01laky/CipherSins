@@ -12,7 +12,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## Is it on npm?
 
-**Not yet.** npm publish is planned for **v1.0.0** when SARIF output and config parsing are complete. Install from source until then — see [README](../README.md#install).
+**Not yet on npm.** npm publish is planned for **v1.0.0** when per-rule config overrides are complete. Install from source until then — see [README](../README.md#install). CLI supports JSON/SARIF output and `--fail-on` since **v0.9.0** — see [cli.md](./cli.md).
 
 ## Does it find secrets or API keys?
 
@@ -24,7 +24,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## How many rules are implemented?
 
-**8/8 MVP rules** at **0.8.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
+**8/8 MVP rules** at **0.9.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
 
 ## Why same-file scope for CS-JWT-01?
 
@@ -69,7 +69,7 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | **CS-CRYPTO-01–09**  | Crypto-auth-import helper |
 | **CS-INT-01–33**     | Cross-rule integration    |
 
-Run `pnpm test` or `npm test` for the full suite (785 tests at v0.8.0).
+Run `pnpm test` or `npm test` for the full suite (928 tests at v0.9.0).
 
 ## Who maintains this?
 

@@ -380,15 +380,15 @@ describe("CS-S41 CLI default scan path", () => {
 });
 
 describe("CS-S42 CLI unknown command", () => {
-	it("CS-S42 exits 1 for unknown subcommands", () => {
+	it("CS-S42 exits 2 for unknown subcommands", () => {
 		const result = cli(["not-a-command"]);
-		expect(result.status).toBe(1);
+		expect(result.status).toBe(2);
 		expect(result.stderr).toContain("Unknown command: not-a-command");
 	});
 });
 
 describe("CS-S43 CLI parse failure exit code", () => {
-	it("CS-S43 exits 1 when scan throws a parse/read error", async () => {
+	it("CS-S43 exits 2 when scan throws a parse/read error", async () => {
 		await withTempDir("ciphersins-cli-fail-", async (tempDir) => {
 			const unreadable = path.join(tempDir, "blocked.ts");
 			fs.writeFileSync(unreadable, "export const blocked = 1;\n");
@@ -397,8 +397,8 @@ describe("CS-S43 CLI parse failure exit code", () => {
 			try {
 				const { runScanCommand } =
 					await import("../packages/cli/src/commands/scan.js");
-				const exitCode = await runScanCommand(unreadable);
-				expect(exitCode).toBe(1);
+				const exitCode = await runScanCommand(["--no-config", unreadable]);
+				expect(exitCode).toBe(2);
 			} finally {
 				fs.chmodSync(unreadable, 0o644);
 			}
@@ -414,14 +414,14 @@ describe("CS-S43 CLI parse failure exit code", () => {
 			try {
 				const result = spawnSync(
 					process.execPath,
-					[cliEntry, "scan", unreadable],
+					[cliEntry, "scan", "--no-config", unreadable],
 					{
 						encoding: "utf8",
 						cwd: rootDir,
 					},
 				);
 
-				expect(result.status).toBe(1);
+				expect(result.status).toBe(2);
 				expect(result.stderr).toMatch(/^error: /);
 				expect(result.stderr).toContain("Failed to parse");
 			} finally {
@@ -461,10 +461,17 @@ describe("CS-S44 runScanCommand findings output", () => {
 		});
 
 		const stdoutWrites: string[] = [];
-		const stdoutSpy = vi
+		const writeSpy = vi
 			.spyOn(process.stdout, "write")
-			.mockImplementation((chunk) => {
+			.mockImplementation((chunk, encodingOrCallback, callback) => {
 				stdoutWrites.push(String(chunk));
+				const done =
+					typeof encodingOrCallback === "function"
+						? encodingOrCallback
+						: callback;
+				if (typeof done === "function") {
+					done();
+				}
 				return true;
 			});
 
@@ -472,7 +479,7 @@ describe("CS-S44 runScanCommand findings output", () => {
 			await import("../packages/cli/src/commands/scan.js");
 
 		try {
-			const exitCode = await runScanCommandMocked("./src");
+			const exitCode = await runScanCommandMocked(["./src"]);
 			expect(exitCode).toBe(0);
 			expect(stdoutWrites.join("")).toContain("CS-TEST-OUT");
 			expect(stdoutWrites.join("")).toContain("test finding for CLI output");
@@ -481,7 +488,7 @@ describe("CS-S44 runScanCommand findings output", () => {
 			);
 			expect(stdoutWrites.join("")).not.toContain("No findings.");
 		} finally {
-			stdoutSpy.mockRestore();
+			writeSpy.mockRestore();
 			vi.doUnmock("@ciphersins/core");
 			vi.resetModules();
 		}

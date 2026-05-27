@@ -1,6 +1,6 @@
 # CipherSins — Implementation Proposal
 
-> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.8.0**) implements the scan pipeline, CLI `scan` command, and **all eight MVP rules** (CS-JWT-01 through CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Sections on CLI flags, SARIF, config parsing, and CI `--fail-on` describe **planned** work unless marked implemented in [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
+> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.9.0**) implements the scan pipeline, CLI `scan` command with **JSON/SARIF output**, **`--fail-on` CI gating**, partial **`ciphersins.config.json`**, and **all eight MVP rules** (CS-JWT-01 through CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Per-rule config overrides and npm publish remain **planned** for v1.0.0 — see [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
 
 ## What It Is (One-Liner)
 
@@ -325,11 +325,11 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 ### Versioning — repo vs npm
 
-| Artifact  | Recommendation                                                                                                                      |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Git repo  | Pre-release **0.8.0** in-repo (**8/8 MVP rules**). Bump **MINOR** after each completed rule phase — npm publish at **v1.0.0** only. |
-| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.         |
-| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                     |
+| Artifact  | Recommendation                                                                                                                                                   |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Git repo  | Pre-release **0.9.0** in-repo (**8/8 MVP rules** + CLI JSON/SARIF/`--fail-on`). Bump **MINOR** after each completed rule phase — npm publish at **v1.0.0** only. |
+| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.                                      |
+| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                                                  |
 
 ### npm publish policy
 

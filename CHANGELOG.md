@@ -3,6 +3,27 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.9.0]
+
+### Added
+
+- **CLI JSON output** — `--format json` with `schemaVersion: 1`, relative paths, sorted findings, and severity summary.
+- **CLI SARIF 2.1.0 output** — `--format sarif` with full 8-rule `tool.driver.rules` catalog, `help.text`, `partialFingerprints`, and `originalUriBaseIds.%WORKINGDIR%` for GitHub Code Scanning.
+- **`--fail-on <severity>`** — CI gating (exit **1** when findings at/above threshold); **`--fail-on none`** overrides config.
+- **`--output <file>`**, **`--quiet`**, **`--config`**, **`--no-config`** flags.
+- **`ciphersins.config.json`** subset — `include`, `exclude`, `failOn` with auto-discovery in cwd.
+- **Core reporting module** — `packages/core/src/reporting/` with `formatJson`, `formatSarif`, `severityRank`, `summaryExceedsFailOn`, `findingPrimaryLocationLineHash`, `normalizeSarifForSnapshot`.
+- **Tests** — CS-CLI-01–60, CS-CLI-EXT-01–60, CS-REP-01–05, CS-REP-EXT-01–20; CI fixture; golden snapshots (**928** total with rule suite).
+- **Piped stdout** — `ensureBlockingStdout()` prevents truncation when spawned under `child_process` (macOS `PIPE_BUF`).
+- **`ciphersins scan --help`** — dedicated subcommand help with flags and exit codes.
+
+### Changed
+
+- **Exit codes** — unknown command / usage / parse errors → **2**; `--fail-on` violations → **1**; successful scan without threshold → **0** (unchanged when `--fail-on` absent).
+- **Stdout drain** — large JSON/SARIF payloads flush before process exit (fixes pipe truncation).
+- CLI `--version` output **0.9.0**; docs, architecture diagram, README, comparison table updated.
+- `scripts/smoke-cli.mjs` passes **`--no-config`** on all spawns; adds JSON/SARIF smoke checks.
+
 ## [0.8.0]
 
 ### Added
