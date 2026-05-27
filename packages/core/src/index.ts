@@ -29,6 +29,23 @@ export {
 } from "./resolve-files.js";
 export { runRules } from "./run-rules.js";
 export { createEmptySummary, scan, summarizeFindings } from "./scan.js";
+export {
+	RULE_IDS,
+	assertKnownRuleIds,
+	applyRuleSeverityOverrides,
+	isKnownRuleId,
+	mergeDisabledRuleIds,
+	parseRuleConfigValue,
+	parseRulesConfig,
+	selectRules,
+	type ParsedRulesConfig,
+	type RuleConfigValue,
+} from "./rule-config.js";
+export {
+	applySuppressions,
+	parseSuppressions,
+	type Suppression,
+} from "./suppressions.js";
 export { formatJson, type FormatJsonOptions } from "./reporting/format-json.js";
 export {
 	formatSarif,

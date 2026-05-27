@@ -30,6 +30,9 @@ Options:
   --config <path>              Load JSON config from explicit path
   --no-config                  Ignore ciphersins.config.json in cwd
   --quiet                      Suppress stdout (stderr warnings remain)
+  --only <ids>                 Comma-separated rule IDs to run
+  --ignore <ids>               Comma-separated rule IDs to skip
+  --allow-critical-ignore      Allow inline suppressions for critical findings
 
 Exit codes:
   0  Scan completed; no findings at/above --fail-on threshold (or threshold absent)
@@ -58,7 +61,7 @@ async function main(): Promise<void> {
 	}
 
 	if (command === "--version" || command === "-v") {
-		process.stdout.write("0.9.0\n");
+		process.stdout.write("0.9.1\n");
 		process.exit(0);
 	}
 

@@ -1,6 +1,6 @@
 # CipherSins — Implementation Proposal
 
-> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.9.0**) implements the scan pipeline, CLI `scan` command with **JSON/SARIF output**, **`--fail-on` CI gating**, partial **`ciphersins.config.json`**, and **all eight MVP rules** (CS-JWT-01 through CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Per-rule config overrides and npm publish remain **planned** for v1.0.0 — see [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
+> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.9.1**) implements the scan pipeline, CLI `scan` command with **JSON/SARIF output**, **`--fail-on` CI gating**, **full `ciphersins.config.json`**, **inline suppressions**, and **all eight MVP rules** (CS-JWT-01 through CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). npm publish remains **planned** for v1.0.0 — see [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
 
 ## What It Is (One-Liner)
 

@@ -17,7 +17,7 @@ import { parseScanArgs } from "../parse-scan-args.js";
 
 ensureBlockingStdout();
 
-export const TOOL_VERSION = "0.9.0";
+export const TOOL_VERSION = "0.9.1";
 
 function writeOutputFile(outputPath: string, payload: string): void {
 	fs.mkdirSync(path.dirname(outputPath), { recursive: true });

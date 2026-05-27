@@ -7,7 +7,7 @@ import {
 	loadConfig,
 	loadConfigFile,
 } from "../../packages/cli/src/config/load-config.js";
-import { cli, jwt03BadDir, rootDir } from "./helpers.js";
+import { cli, jwt01BadDir, jwt03BadDir, rootDir } from "./helpers.js";
 
 function withTempDir(prefix: string, run: (dir: string) => void) {
 	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -101,6 +101,79 @@ describe("CS-CLI config loading", () => {
 			);
 			const config = loadConfig({ cwd: tempDir, noConfig: false });
 			expect(config?.failOn).toBe("high");
+		});
+	});
+
+	it("CS-CLI-61 config ignore disables rule findings", () => {
+		withTempDir("ciphersins-cli-ignore-config-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ ignore: ["CS-JWT-01"] }),
+			);
+			const result = cli(["--format", "json", jwt01BadDir], { cwd: tempDir });
+			expect(result.status).toBe(0);
+			const doc = JSON.parse(result.stdout);
+			expect(
+				doc.findings.some((f: { ruleId: string }) => f.ruleId === "CS-JWT-01"),
+			).toBe(false);
+		});
+	});
+
+	it("CS-CLI-62 CLI --only limits rules in output", () => {
+		const result = cli([
+			"--format",
+			"json",
+			"--only",
+			"CS-JWT-01",
+			jwt01BadDir,
+		]);
+		expect(result.status).toBe(0);
+		const doc = JSON.parse(result.stdout);
+		expect(doc.findings.length).toBeGreaterThan(0);
+		expect(
+			doc.findings.every((f: { ruleId: string }) => f.ruleId === "CS-JWT-01"),
+		).toBe(true);
+	});
+
+	it("CS-CLI-63 config rules warn alias downgrades severity for fail-on", () => {
+		withTempDir("ciphersins-cli-rules-warn-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({
+					failOn: "high",
+					rules: { "CS-JWT-01": "warn" },
+				}),
+			);
+			const result = cli(["--format", "json", jwt01BadDir], { cwd: tempDir });
+			expect(result.status).toBe(0);
+			const doc = JSON.parse(result.stdout);
+			expect(doc.findings[0]?.severity).toBe("medium");
+		});
+	});
+
+	it("CS-CLI-64 config rules off disables rule via rules map", () => {
+		withTempDir("ciphersins-cli-rules-off-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ rules: { "CS-JWT-01": "off" } }),
+			);
+			const result = cli(["--format", "json", jwt01BadDir], { cwd: tempDir });
+			const doc = JSON.parse(result.stdout);
+			expect(
+				doc.findings.some((f: { ruleId: string }) => f.ruleId === "CS-JWT-01"),
+			).toBe(false);
+		});
+	});
+
+	it("CS-CLI-65 invalid config unknown rule id exits 2", () => {
+		withTempDir("ciphersins-cli-bad-rule-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ ignore: ["CS-NOPE-99"] }),
+			);
+			const result = cli(["--format", "json", jwt01BadDir], { cwd: tempDir });
+			expect(result.status).toBe(2);
+			expect(result.stderr).toMatch(/unknown rule id/);
 		});
 	});
 });

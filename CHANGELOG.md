@@ -3,6 +3,23 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.9.1]
+
+### Added
+
+- **Per-rule config** — `rules` map in `ciphersins.config.json` with severity overrides (`low`|`medium`|`high`|`critical`, aliases `warn`→`medium`, `error`→`high`, `off` to disable).
+- **Config `ignore` / `only`** — disable or restrict rules from config.
+- **CLI `--only` / `--ignore`** — comma-separated rule ID filters (CLI `--ignore` merges with config).
+- **Inline suppressions** — `// ciphersins-ignore-next-line [RULE-ID]` and `// ciphersins-ignore [RULE-ID]` on the same line.
+- **`--allow-critical-ignore`** — opt-in flag to allow suppressing **critical** findings via comments.
+- **Core modules** — `rule-config.ts`, `suppressions.ts`; extended `ScanOptions` (`only`, `ignore`, `ruleSeverities`, `allowCriticalIgnore`).
+- **Tests** — CS-RULE-CFG-01–04, CS-SUP-01–06, CS-CLI-61–68 (**946** total).
+
+### Changed
+
+- CLI `--version` output **0.9.1**; docs updated for full config schema and suppressions.
+- npm publish remains **v1.0.0** only.
+
 ## [0.9.0]
 
 ### Added

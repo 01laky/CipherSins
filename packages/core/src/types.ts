@@ -30,6 +30,14 @@ export interface ScanOptions {
 	exclude?: string[];
 	/** Working directory for default scan root resolution. Defaults to `process.cwd()`. */
 	cwd?: string;
+	/** Run only these rule IDs. */
+	only?: string[];
+	/** Skip these rule IDs. */
+	ignore?: string[];
+	/** Per-rule severity overrides applied after rules run. */
+	ruleSeverities?: Record<string, Severity>;
+	/** Allow inline suppressions for critical findings. Defaults to false. */
+	allowCriticalIgnore?: boolean;
 }
 
 export interface ScanResult {

@@ -40,10 +40,10 @@ General SAST tools can encode similar rules, but CipherSins is **purpose-built**
 
 - Consistent rule IDs (`CS-JWT-01` … `CS-HASH-02`)
 - Bad/good fixtures per rule
-- Numbered vitest cases per rule (928 tests at v0.9.0)
+- Numbered vitest cases per rule (946 tests at v0.9.1)
 - Linked rule documentation with fix guidance
 
-**Implemented at v0.9.0 (8 rules + CLI infra):**
+**Implemented at v0.9.1 (8 rules + full CLI):**
 
 | Rule       | Severity | What it catches                             |
 | ---------- | -------- | ------------------------------------------- |
@@ -69,13 +69,15 @@ You might still use Semgrep or ESLint alongside CipherSins for broader coverage.
 
 ## Roadmap overlap
 
-| Feature                                   | Status after v0.9.0                      |
-| ----------------------------------------- | ---------------------------------------- |
-| JSON output                               | **Implemented**                          |
-| SARIF 2.1.0 output                        | **Implemented**                          |
-| `ciphersins.config.json`                  | **Partial** (include / exclude / failOn) |
-| `--fail-on` for CI gates                  | **Implemented**                          |
-| Programmatic `formatJson` / `formatSarif` | **Implemented** (`@ciphersins/core`)     |
-| npm publish                               | **v1.0.0** only                          |
+| Feature                                   | Status after v0.9.1                  |
+| ----------------------------------------- | ------------------------------------ |
+| JSON output                               | **Implemented**                      |
+| SARIF 2.1.0 output                        | **Implemented**                      |
+| `ciphersins.config.json`                  | **Implemented** (full schema)        |
+| `--only` / `--ignore` rule filters        | **Implemented**                      |
+| Inline suppressions                       | **Implemented**                      |
+| `--fail-on` for CI gates                  | **Implemented**                      |
+| Programmatic `formatJson` / `formatSarif` | **Implemented** (`@ciphersins/core`) |
+| npm publish                               | **v1.0.0** only                      |
 
 See [proposal.MD](./proposal.MD) for the full MVP checklist.

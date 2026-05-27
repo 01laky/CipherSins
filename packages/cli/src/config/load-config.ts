@@ -1,11 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
-import { isSeverity, type Severity } from "@ciphersins/core";
+import {
+	assertKnownRuleIds,
+	isSeverity,
+	parseRulesConfig,
+	type Severity,
+} from "@ciphersins/core";
 
 export interface CipherSinsConfig {
 	include?: string[];
 	exclude?: string[];
 	failOn?: Severity;
+	only?: string[];
+	ignore?: string[];
+	rules?: Record<string, string>;
 }
 
 export function loadConfigFile(configPath: string): CipherSinsConfig {
@@ -44,6 +52,43 @@ export function loadConfigFile(configPath: string): CipherSinsConfig {
 			throw new Error(`invalid config: invalid failOn value: ${record.failOn}`);
 		}
 		config.failOn = record.failOn;
+	}
+
+	if (record.only !== undefined) {
+		if (!Array.isArray(record.only) || !record.only.every(isString)) {
+			throw new Error("invalid config: only must be a string array");
+		}
+		assertKnownRuleIds(record.only, "config only");
+		config.only = record.only;
+	}
+
+	if (record.ignore !== undefined) {
+		if (!Array.isArray(record.ignore) || !record.ignore.every(isString)) {
+			throw new Error("invalid config: ignore must be a string array");
+		}
+		assertKnownRuleIds(record.ignore, "config ignore");
+		config.ignore = record.ignore;
+	}
+
+	if (record.rules !== undefined) {
+		if (
+			record.rules === null ||
+			typeof record.rules !== "object" ||
+			Array.isArray(record.rules)
+		) {
+			throw new Error("invalid config: rules must be an object");
+		}
+		const rules: Record<string, string> = {};
+		for (const [ruleId, value] of Object.entries(
+			record.rules as Record<string, unknown>,
+		)) {
+			if (typeof value !== "string") {
+				throw new Error(`invalid config: rules.${ruleId} must be a string`);
+			}
+			rules[ruleId] = value;
+		}
+		parseRulesConfig(rules);
+		config.rules = rules;
 	}
 
 	return config;

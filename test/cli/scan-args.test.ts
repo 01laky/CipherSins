@@ -143,4 +143,25 @@ describe("CS-CLI scan args and severity helpers", () => {
 		);
 		expect(SEVERITIES).toHaveLength(4);
 	});
+
+	it("CS-CLI-66 parseScanArgs --only parses comma-separated rule ids", () => {
+		const parsed = parseScanArgs(["--only", "CS-JWT-01,CS-CMP-01"]);
+		expect(parsed.ok).toBe(true);
+		if (parsed.ok) {
+			expect(parsed.only).toEqual(["CS-JWT-01", "CS-CMP-01"]);
+		}
+	});
+
+	it("CS-CLI-67 parseScanArgs --ignore unknown rule id returns error", () => {
+		const parsed = parseScanArgs(["--ignore", "CS-NOPE-99"]);
+		expect(parsed.ok).toBe(false);
+	});
+
+	it("CS-CLI-68 parseScanArgs --allow-critical-ignore sets flag", () => {
+		const parsed = parseScanArgs(["--allow-critical-ignore"]);
+		expect(parsed.ok).toBe(true);
+		if (parsed.ok) {
+			expect(parsed.allowCriticalIgnore).toBe(true);
+		}
+	});
 });

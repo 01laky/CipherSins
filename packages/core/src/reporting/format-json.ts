@@ -14,7 +14,7 @@ export function formatJson(
 ): string {
 	const opts: FormatJsonOptions =
 		typeof options === "string"
-			? { cwd: options, toolVersion: toolVersion ?? "0.9.0" }
+			? { cwd: options, toolVersion: toolVersion ?? "0.9.1" }
 			: options;
 
 	const summaryTotal = Object.values(result.summary).reduce(

@@ -81,7 +81,7 @@ export function formatSarif(
 ): string {
 	const opts: FormatSarifOptions =
 		typeof options === "string"
-			? { cwd: options, toolVersion: toolVersion ?? "0.9.0" }
+			? { cwd: options, toolVersion: toolVersion ?? "0.9.1" }
 			: options;
 
 	return `${JSON.stringify(

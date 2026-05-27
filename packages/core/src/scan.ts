@@ -2,7 +2,9 @@ import { ParseSourceFileError } from "./parse-source-file.js";
 import { createRuleContext } from "./create-rule-context.js";
 import { resolveFiles } from "./resolve-files.js";
 import { runRules } from "./run-rules.js";
+import { applyRuleSeverityOverrides, selectRules } from "./rule-config.js";
 import { allRules } from "./rules/index.js";
+import { applySuppressions, parseSuppressions } from "./suppressions.js";
 import {
 	type Finding,
 	type ScanOptions,
@@ -33,15 +35,24 @@ export function summarizeFindings(
 
 export async function scan(options: ScanOptions = {}): Promise<ScanResult> {
 	const { files, skippedPaths } = await resolveFiles(options);
+	const rules = selectRules(allRules, options);
 	const findings: Finding[] = [];
 	const scannedFiles: string[] = [];
 	const parseErrors: ParseSourceFileError[] = [];
+	const suppressionsByFile = new Map<
+		string,
+		ReturnType<typeof parseSuppressions>
+	>();
 
 	for (const filePath of files) {
 		try {
 			const context = createRuleContext(filePath);
 			scannedFiles.push(filePath);
-			findings.push(...runRules(allRules, context));
+			suppressionsByFile.set(
+				context.filePath,
+				parseSuppressions(context.sourceFile),
+			);
+			findings.push(...runRules(rules, context));
 		} catch (error) {
 			if (error instanceof ParseSourceFileError) {
 				parseErrors.push(error);
@@ -60,9 +71,19 @@ export async function scan(options: ScanOptions = {}): Promise<ScanResult> {
 		);
 	}
 
-	return {
+	const adjustedFindings = applyRuleSeverityOverrides(
 		findings,
-		summary: summarizeFindings(findings),
+		options.ruleSeverities,
+	);
+	const filteredFindings = applySuppressions(
+		adjustedFindings,
+		suppressionsByFile,
+		options.allowCriticalIgnore ?? false,
+	);
+
+	return {
+		findings: filteredFindings,
+		summary: summarizeFindings(filteredFindings),
 		scannedFiles,
 		skippedPaths,
 	};

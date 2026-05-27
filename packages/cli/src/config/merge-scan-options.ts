@@ -1,4 +1,7 @@
 import {
+	assertKnownRuleIds,
+	mergeDisabledRuleIds,
+	parseRulesConfig,
 	resolveDefaultScanRoot,
 	type ScanOptions,
 	type Severity,
@@ -32,6 +35,29 @@ export function mergeScanOptions(
 	}
 	if (config?.exclude) {
 		scanOptions.exclude = config.exclude;
+	}
+
+	const parsedRules = parseRulesConfig(config?.rules);
+	const only = parsed.only ?? config?.only;
+	const ignore = mergeDisabledRuleIds(
+		config?.ignore,
+		parsedRules.disabledRuleIds,
+		parsed.ignore,
+	);
+
+	if (only) {
+		assertKnownRuleIds(only, "only");
+		scanOptions.only = only;
+	}
+	if (ignore) {
+		assertKnownRuleIds(ignore, "ignore");
+		scanOptions.ignore = ignore;
+	}
+	if (Object.keys(parsedRules.severities).length > 0) {
+		scanOptions.ruleSeverities = parsedRules.severities;
+	}
+	if (parsed.allowCriticalIgnore) {
+		scanOptions.allowCriticalIgnore = true;
 	}
 
 	let failOn = parsed.failOn;
