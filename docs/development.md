@@ -18,25 +18,26 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 
 ## Common commands
 
-| Command                            | Purpose                                                                           |
-| ---------------------------------- | --------------------------------------------------------------------------------- |
-| `pnpm verify`                      | format → typecheck → build → install (link bin) → test → CLI smoke                |
-| `pnpm build`                       | Build `@ciphersins/core` and `ciphersins` CLI                                     |
-| `pnpm test`                        | Vitest (`test/scaffold.test.ts` CS-S01–S22, `test/edge-cases.test.ts` CS-S23–S46) |
-| `pnpm exec ciphersins scan [path]` | Run local CLI against a path                                                      |
-| `pnpm smoke:cli`                   | Post-build CLI smoke via `scripts/smoke-cli.mjs`                                  |
-| `pnpm format:fix`                  | Apply Prettier (tabs)                                                             |
+| Command                            | Purpose                                                            |
+| ---------------------------------- | ------------------------------------------------------------------ |
+| `pnpm verify`                      | format → typecheck → build → install (link bin) → test → CLI smoke |
+| `pnpm build`                       | Build `@ciphersins/core` and `ciphersins` CLI                      |
+| `pnpm test`                        | Vitest (scaffold, edge-cases, rule tests)                          |
+| `pnpm exec ciphersins scan [path]` | Run local CLI against a path                                       |
+| `pnpm smoke:cli`                   | Post-build CLI smoke via `scripts/smoke-cli.mjs`                   |
+| `pnpm format:fix`                  | Apply Prettier (tabs)                                              |
 
 ## Monorepo layout
 
 ```text
 packages/core   @ciphersins/core — scan engine, rule registry, TS parser
 packages/cli    ciphersins — CLI binary (future npm publish target at v1.0.0)
-fixtures/       Rule bad/good samples (Phase 1+)
+fixtures/       Rule bad/good samples (e.g. fixtures/cs-jwt-01/)
 test/fixtures/  Internal harness fixtures only
+docs/rules/     Per-rule documentation and index
 ```
 
-## Scan defaults (Phase 0)
+## Scan defaults
 
 When no path is passed:
 
@@ -46,18 +47,24 @@ When no path is passed:
 
 Config file parsing is **not implemented yet**. See [`ciphersins.config.example.json`](./ciphersins.config.example.json) for the intended schema.
 
-## Adding a rule (Phase 1+)
+## Adding a rule
 
-1. Create `fixtures/<rule-id>/bad/` and `fixtures/<rule-id>/good/`
-2. Implement `Rule` in `packages/core/src/rules/`
-3. Register in `packages/core/src/rules/index.ts`
-4. Add vitest coverage with expected finding counts
+Worked example: **CS-JWT-01** (`packages/core/src/rules/cs-jwt-01.ts`).
+
+1. Create `fixtures/<rule-id>/bad/` and `fixtures/<rule-id>/good/` with minimal samples
+2. Implement `Rule` in `packages/core/src/rules/` using AST analysis (no regex-only detection)
+3. Build findings with `createFinding()` in `packages/core/src/rules/helpers/finding.ts` for consistent line/column/snippet fields
+4. Register in `packages/core/src/rules/index.ts`
+5. Add `docs/rules/<RULE-ID>.md` and link from [`docs/rules/README.md`](./rules/README.md)
+6. Add vitest coverage in `test/rules/` with expected finding counts per fixture
 
 Rule IDs follow `CS-<CATEGORY>-<NUMBER>` (e.g. `CS-JWT-01`).
 
+Export individual rules from `@ciphersins/core` when isolated unit tests need `rule.run(context)`.
+
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.2.0` = monorepo scaffold).
+- Repo version bumps after each completed phase (`0.3.0` = first rule CS-JWT-01).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI

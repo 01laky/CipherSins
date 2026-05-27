@@ -35,8 +35,9 @@ describe("CS-S01 exports", () => {
 });
 
 describe("CS-S02 rule registry", () => {
-	it("CS-S02 starts with an empty rule registry", () => {
-		expect(allRules).toHaveLength(0);
+	it("CS-S02 registers CS-JWT-01 in the rule registry", () => {
+		expect(allRules).toHaveLength(1);
+		expect(allRules[0]?.id).toBe("CS-JWT-01");
 	});
 });
 
@@ -388,6 +389,6 @@ describe("CS-S22 CLI help and version", () => {
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("0.2.1");
+		expect(result.stdout.trim()).toBe("0.3.0");
 	});
 });

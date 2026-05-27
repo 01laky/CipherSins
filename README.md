@@ -8,14 +8,39 @@ Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.
 pnpm exec ciphersins scan ./src
 ```
 
-> Rule implementation is in progress (Phase 0 ships the scan pipeline with an empty rule registry). See [`docs/proposal.MD`](./docs/proposal.MD).
+See [`docs/proposal.MD`](./docs/proposal.MD) for the full product spec.
 
-## Status (v0.2.1)
+## Status (v0.3.0)
 
 - pnpm monorepo: `@ciphersins/core` + `ciphersins` CLI
 - TypeScript compiler API parsing with default include/exclude globs
-- `ciphersins scan [path]` — prints `No findings.` until rules land in Phase 1
-- Vitest scaffold suite **CS-S01–CS-S22** + edge-case suite **CS-S23–CS-S46**
+- **CS-JWT-01** — flags `jsonwebtoken` decode without verify in the same file
+- Vitest scaffold suite **CS-S01–CS-S22**, edge-case suite **CS-S23–CS-S46**, rule suite **CS-JWT-01-01–24**
+
+### Example
+
+```bash
+pnpm exec ciphersins scan fixtures/cs-jwt-01/bad
+```
+
+```text
+fixtures/cs-jwt-01/bad/default-import-decode-only.ts:4:9  CS-JWT-01  high
+  jwt.decode() used without jwt.verify() in the same file.
+  https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md
+```
+
+## Rules (MVP)
+
+| ID                                     | Severity | Title                       | Status      |
+| -------------------------------------- | -------- | --------------------------- | ----------- |
+| [CS-JWT-01](./docs/rules/CS-JWT-01.md) | high     | JWT decode without verify   | implemented |
+| CS-JWT-02                              | high     | Verify without algorithms   | planned     |
+| CS-JWT-03                              | critical | Algorithm none / bypass     | planned     |
+| CS-JWT-04                              | medium   | Missing exp validation      | planned     |
+| CS-CMP-01                              | high     | Timing-unsafe compare       | planned     |
+| CS-RNG-01                              | high     | Math.random in auth context | planned     |
+
+Full index: [`docs/rules/README.md`](./docs/rules/README.md).
 
 ## Quick start (development)
 
@@ -34,6 +59,7 @@ See [`docs/development.md`](./docs/development.md) for the full contributor guid
 | ------------------------------------------------------------------------------ | --------------------------------------------------- |
 | [`docs/proposal.MD`](./docs/proposal.MD)                                       | Product spec, MVP rules, architecture               |
 | [`docs/development.md`](./docs/development.md)                                 | Local setup, commands, monorepo layout              |
+| [`docs/rules/README.md`](./docs/rules/README.md)                               | Rule index and documentation                        |
 | [`docs/ciphersins.config.example.json`](./docs/ciphersins.config.example.json) | Intended config schema (parser not yet implemented) |
 | [`CONTRIBUTING.md`](./CONTRIBUTING.md)                                         | Commit standards, git hooks                         |
 

@@ -3,6 +3,22 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.0]
+
+### Added
+
+- **CS-JWT-01** rule: flags `jsonwebtoken` decode when no `verify` exists in the same file (import, require, alias, inline require, TSX, local wrappers).
+- Shared **`createFinding()`** helper for consistent finding shape across rules.
+- Fixtures `fixtures/cs-jwt-01/{bad,good}/` and tests `test/rules/cs-jwt-01.test.ts` (CS-JWT-01-01–24).
+- **`docs/rules/CS-JWT-01.md`** and **`docs/rules/README.md`** rules index.
+- smoke-cli JWT bad-dir regression check.
+
+### Changed
+
+- `allRules` registry includes CS-JWT-01; `csJwt01Rule` exported from `@ciphersins/core`.
+- Scaffold test CS-S02 expects one registered rule.
+- README rules table and development docs reference CS-JWT-01.
+
 ## [0.2.1]
 
 ### Added

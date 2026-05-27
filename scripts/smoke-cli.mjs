@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
 const fixtureDir = path.join(rootDir, "test/fixtures/scaffold");
+const jwtBadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
 
 function assert(condition, message) {
 	if (!condition) {
@@ -29,6 +30,20 @@ assert(
 assert(
 	direct.stdout.includes("No findings."),
 	`unexpected stdout: ${direct.stdout}`,
+);
+
+const jwtScan = spawnSync(process.execPath, [cliEntry, "scan", jwtBadDir], {
+	encoding: "utf8",
+	cwd: rootDir,
+});
+
+assert(
+	jwtScan.status === 0,
+	`jwt bad scan exit ${jwtScan.status}\n${jwtScan.stderr}`,
+);
+assert(
+	jwtScan.stdout.includes("CS-JWT-01"),
+	`expected CS-JWT-01 in:\n${jwtScan.stdout}`,
 );
 
 const cliBin = path.join(rootDir, "node_modules/.bin/ciphersins");
