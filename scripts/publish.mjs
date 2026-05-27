@@ -127,7 +127,9 @@ console.log("\npublish: running npm run pack:check …");
 run("npm", ["run", "pack:check"]);
 
 if (dryRun) {
-	console.log("\npublish: dry-run OK — pack:check passed, no packages uploaded");
+	console.log(
+		"\npublish: dry-run OK — pack:check passed, no packages uploaded",
+	);
 	process.exit(0);
 }
 
