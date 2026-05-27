@@ -69,7 +69,7 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.4.1` = build-script fix; `0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
+- Repo version bumps after each completed phase (`0.4.2` = CI bin link fix; `0.4.1` = build-script fix; `0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI

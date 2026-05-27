@@ -10,3 +10,8 @@ for (const pkg of ["packages/core", "packages/cli"]) {
 	process.stdout.write(`build-packages: ${pkg}\n`);
 	execFileSync("npm", ["run", "build"], { cwd, stdio: "inherit" });
 }
+
+execFileSync("node", ["scripts/link-cli-bin.mjs"], {
+	cwd: rootDir,
+	stdio: "inherit",
+});

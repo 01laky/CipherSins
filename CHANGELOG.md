@@ -3,6 +3,16 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.2]
+
+### Fixed
+
+- **`scripts/link-cli-bin.mjs`** — after build, symlinks `node_modules/.bin/ciphersins` to `packages/cli/dist/cli.js`. Restores **CS-S04b** and smoke-cli linked-bin checks on CI where `pnpm install` runs before `dist/` exists and no post-build install relinks the bin.
+
+### Changed
+
+- CLI `--version` output updated to `0.4.2`.
+
 ## [0.4.1]
 
 ### Fixed
