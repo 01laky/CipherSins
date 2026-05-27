@@ -1,6 +1,6 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-1.0.0-blue)
+![core](https://img.shields.io/badge/core-1.0.0_stable-green)
 ![node](https://img.shields.io/badge/node-%3E%3D20-339933)
 ![rules](https://img.shields.io/badge/rules-8%2F8_implemented-9cf)
 ![tests](https://img.shields.io/badge/tests-1164_passing-brightgreen)
