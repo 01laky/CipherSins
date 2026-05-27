@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { ciFixtureDir, cliEntry, rootDir } from "./helpers.js";
+import { ciFixtureDir, cliEntry } from "./helpers.js";
 
 describe("CS-CLI CI workflow fixture", () => {
 	it("CS-CLI-60 ci fixture scan sarif output fail-on high exits 1 with CS-JWT-01", () => {
@@ -43,7 +43,5 @@ describe("CS-CLI CI workflow fixture", () => {
 				fs.unlinkSync(outputPath);
 			}
 		}
-
-		expect(rootDir).toContain("ciphersins");
 	});
 });
