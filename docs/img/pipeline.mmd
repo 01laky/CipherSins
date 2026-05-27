@@ -1,0 +1,59 @@
+flowchart TB
+	subgraph INPUT["Scan input"]
+		direction LR
+		PATHS["paths · cwd"]
+		GLOBS["include / exclude globs"]
+	end
+
+	subgraph RESOLVE["File resolution · @ciphersins/core"]
+		direction TB
+		ROOT["resolveDefaultScanRoot()"]
+		RF["resolveFiles() · tinyglobby"]
+		META["scannedFiles · skippedPaths"]
+		ROOT --> RF --> META
+	end
+
+	subgraph PARSE["TypeScript compiler API"]
+		direction TB
+		PSF["parseSourceFile()"]
+		SF["SourceFile AST"]
+		PSF --> SF
+	end
+
+	subgraph RULES["Rule engine"]
+		direction TB
+		REG["allRules registry"]
+		CTX["createRuleContext()"]
+		RUN["runRules() · per file"]
+		RULE["Rule.run(context) → Finding[]"]
+		REG --> RUN
+		CTX --> RUN
+		RUN --> RULE
+	end
+
+	subgraph OUTPUT["Results"]
+		direction LR
+		FIND["findings · snippet · helpUrl"]
+		SUM["summary by severity"]
+		CLI["ciphersins scan · stdout"]
+	end
+
+	PATHS --> ROOT
+	GLOBS --> RF
+	META --> PSF
+	SF --> CTX
+	RULE --> FIND
+	FIND --> SUM
+	SUM --> CLI
+
+	classDef input fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe
+	classDef resolve fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#ede9fe
+	classDef parse fill:#042f2e,stroke:#2dd4bf,stroke-width:2px,color:#ccfbf1
+	classDef rules fill:#431407,stroke:#fb923c,stroke-width:2px,color:#ffedd5
+	classDef output fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#dbeafe
+
+	class PATHS,GLOBS input
+	class ROOT,RF,META resolve
+	class PSF,SF parse
+	class REG,CTX,RUN,RULE rules
+	class FIND,SUM,CLI output

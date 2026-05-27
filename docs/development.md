@@ -25,6 +25,7 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 | `pnpm test`                        | Vitest (scaffold, edge-cases, rule tests)                          |
 | `pnpm exec ciphersins scan [path]` | Run local CLI against a path                                       |
 | `pnpm smoke:cli`                   | Post-build CLI smoke via `scripts/smoke-cli.mjs`                   |
+| `pnpm diagrams:build`              | Regenerate README SVGs from `docs/img/*.mmd`                       |
 | `pnpm format:fix`                  | Apply Prettier (tabs)                                              |
 
 ## Monorepo layout
@@ -35,6 +36,7 @@ packages/cli    ciphersins — CLI binary (future npm publish target at v1.0.0)
 fixtures/       Rule bad/good samples (e.g. fixtures/cs-jwt-01/)
 test/fixtures/  Internal harness fixtures only
 docs/rules/     Per-rule documentation and index
+docs/img/       Mermaid sources + committed SVGs for README/docs
 ```
 
 ## Scan defaults
@@ -57,6 +59,7 @@ Worked example: **CS-JWT-01** (`packages/core/src/rules/cs-jwt-01.ts`).
 4. Register in `packages/core/src/rules/index.ts`
 5. Add `docs/rules/<RULE-ID>.md` and link from [`docs/rules/README.md`](./rules/README.md)
 6. Add vitest coverage in `test/rules/` with expected finding counts per fixture
+7. Update architecture diagrams in `docs/img/` if the rule changes the pipeline (`pnpm diagrams:build`)
 
 Rule IDs follow `CS-<CATEGORY>-<NUMBER>` (e.g. `CS-JWT-01`).
 
@@ -64,7 +67,7 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.3.1` = docs landing page refactor; `0.3.0` = CS-JWT-01).
+- Repo version bumps after each completed phase (`0.3.2` = architecture diagrams; `0.3.1` = docs landing page).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI

@@ -1,6 +1,6 @@
 {
 	"name": "ciphersins",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"private": true,
 	"description": "Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.",
 	"license": "MIT",
@@ -36,6 +36,7 @@
 		"format": "prettier --check .",
 		"format:fix": "prettier --write .",
 		"smoke:cli": "node scripts/smoke-cli.mjs",
+		"diagrams:build": "node scripts/build-diagrams.mjs",
 		"verify": "pnpm format && pnpm typecheck && pnpm build && pnpm install && pnpm test && pnpm smoke:cli"
 	},
 	"prettier": {

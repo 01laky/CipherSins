@@ -1,11 +1,11 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-0.3.1-blue)
+![core](https://img.shields.io/badge/core-0.3.2-blue)
 ![node](https://img.shields.io/badge/node-%3E%3D18-339933)
 ![rules](https://img.shields.io/badge/rules-1_implemented-9cf)
 ![tests](https://img.shields.io/badge/tests-84_passing-brightgreen)
 [![ci](https://github.com/01laky/ciphersins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/ciphersins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-pre--release_0.3.1-yellow)
+![status](https://img.shields.io/badge/status-pre--release_0.3.2-yellow)
 
 **One CLI scan for crypto API footguns in Node/TS app code** — JWT misuse, timing-unsafe compares, weak RNG, and weak hashing patterns.
 
@@ -13,7 +13,7 @@
 
 Catch `jwt.decode()` without `jwt.verify()` before it ships — **not another regex grep on `node_modules`**.
 
-**Status:** Pre-release **`0.3.1`**. Monorepo scan pipeline, TypeScript compiler API parsing, and **CS-JWT-01** (jsonwebtoken decode without verify in the same file) are implemented. MVP rules, SARIF output, and config parsing are in progress. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
+**Status:** Pre-release **`0.3.2`**. Monorepo scan pipeline, TypeScript compiler API parsing, and **CS-JWT-01** (jsonwebtoken decode without verify in the same file) are implemented. MVP rules, SARIF output, and config parsing are in progress. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
 
 ---
 
@@ -73,23 +73,15 @@ Each rule ships with **bad/good fixtures** and vitest IDs so regressions are cau
 
 Application source files enter through **glob resolution**, get parsed with the **TypeScript compiler API**, and each registered **rule** inspects the AST for known misuse patterns.
 
-```text
-  paths / cwd
-       │
-       ▼
-  resolveFiles()          tinyglobby include/exclude
-       │
-       ▼
-  parseSourceFile()       TS/TSX/JS/JSX via typescript
-       │
-       ▼
-  runRules(allRules)      per-file RuleContext → Finding[]
-       │
-       ▼
-  CLI / scan()            summary by severity + file:line output
-```
+![End-to-end scan pipeline](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/pipeline.svg)
 
 **Design constraints:** rules use AST analysis (no regex-only detection); findings include snippet, severity, and `helpUrl`; cross-file call-graph analysis is out of scope for v1.
+
+### Rule example (CS-JWT-01)
+
+![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/rules-overview.svg)
+
+Diagram sources: [`docs/img/`](./docs/img/) (Mermaid `.mmd` + committed SVG). Regenerate with `pnpm diagrams:build`.
 
 Package layout:
 
@@ -179,6 +171,8 @@ Exclude: `node_modules`, `dist`, `*.test.*`, `*.spec.*`.
 | [Product proposal](./docs/proposal.MD)                  | Scope, MVP rules, architecture, success criteria    |
 | [Rules index](./docs/rules/README.md)                   | Per-rule docs and implementation status             |
 | [CS-JWT-01](./docs/rules/CS-JWT-01.md)                  | First rule — decode without verify                  |
+| [Architecture](./docs/architecture.md)                  | Scan pipeline and rule detection diagrams           |
+| [Architecture diagrams](./docs/img/README.md)           | Mermaid sources and SVG regeneration                |
 | [Comparison](./docs/comparison.md)                      | vs gitleaks, npm audit, Semgrep, ESLint             |
 | [FAQ](./docs/faq.md)                                    | Common questions                                    |
 | [Development](./docs/development.md)                    | Contributor setup, adding rules                     |
@@ -252,6 +246,7 @@ pnpm verify
 | `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke |
 | `pnpm test`                        | Vitest — CS-S01–S46, CS-JWT-01-01–24                    |
 | `pnpm exec ciphersins scan [path]` | Run linked CLI                                          |
+| `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                   |
 | `pnpm format:fix`                  | Apply Prettier (tabs)                                   |
 
 Adding a rule: [`docs/development.md#adding-a-rule`](./docs/development.md#adding-a-rule).

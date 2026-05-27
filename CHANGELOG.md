@@ -3,6 +3,20 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.2]
+
+### Added
+
+- **Architecture diagrams** — Mermaid sources in `docs/img/*.mmd`, committed SVGs, and `pnpm diagrams:build` (via `@mermaid-js/mermaid-cli`).
+- **`docs/architecture.md`** — scan pipeline and CS-JWT-01 detection flow with diagram embeds.
+- **`scripts/build-diagrams.mjs`** — renders all `docs/img/*.mmd` to `.svg`.
+
+### Changed
+
+- README Architecture section uses committed SVGs instead of ASCII art.
+- **`docs/rules/CS-JWT-01.md`** embeds rules-overview diagram.
+- CLI `--version` output updated to `0.3.2`.
+
 ## [0.3.1]
 
 ### Added
