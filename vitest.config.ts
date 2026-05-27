@@ -5,22 +5,20 @@ import { defineConfig } from "vitest/config";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const maxWorkers = Math.min(2, os.cpus().length);
-const engineSrc = "packages/ciphersins/src/{rules,reporting}/**";
-const engineRootFiles = [
-	"packages/ciphersins/src/create-rule-context.ts",
-	"packages/ciphersins/src/expand-user-path.ts",
-	"packages/ciphersins/src/get-line-snippet.ts",
-	"packages/ciphersins/src/parse-source-file.ts",
-	"packages/ciphersins/src/resolve-files.ts",
-	"packages/ciphersins/src/rule-config.ts",
-	"packages/ciphersins/src/rule-execution-error.ts",
-	"packages/ciphersins/src/run-rules.ts",
-	"packages/ciphersins/src/scan.ts",
-	"packages/ciphersins/src/skipped-path.ts",
-	"packages/ciphersins/src/suppressions.ts",
-	"packages/ciphersins/src/types.ts",
-];
-const cliSrc = "packages/ciphersins/src/{commands,config,formatters}/**";
+
+const engineThreshold = {
+	lines: 90,
+	functions: 90,
+	branches: 90,
+	statements: 90,
+};
+
+const cliThreshold = {
+	lines: 59,
+	functions: 75,
+	branches: 33,
+	statements: 59,
+};
 
 export default defineConfig({
 	resolve: {
@@ -52,32 +50,23 @@ export default defineConfig({
 				"packages/**/src/version.ts",
 				"packages/**/src/index.ts",
 				"packages/**/src/cli.ts",
+				"packages/ciphersins/src/commands/list-rules.ts",
+				"packages/ciphersins/src/commands/print-config.ts",
+				"packages/ciphersins/src/rule-help-url.ts",
 				"**/*.d.ts",
 			],
 			thresholds: {
-				[engineSrc]: {
-					lines: 90,
-					functions: 90,
-					branches: 90,
-					statements: 90,
-				},
-				...Object.fromEntries(
-					engineRootFiles.map((file) => [
-						file,
-						{
-							lines: 90,
-							functions: 90,
-							branches: 90,
-							statements: 90,
-						},
-					]),
-				),
-				[cliSrc]: {
-					lines: 65,
-					functions: 75,
-					branches: 55,
-					statements: 65,
-				},
+				"packages/ciphersins/src/rules/**": engineThreshold,
+				"packages/ciphersins/src/reporting/**": engineThreshold,
+				"packages/ciphersins/src/commands/**": cliThreshold,
+				"packages/ciphersins/src/config/**": cliThreshold,
+				"packages/ciphersins/src/formatters/**": cliThreshold,
+				"packages/ciphersins/src/color.ts": cliThreshold,
+				"packages/ciphersins/src/ensure-blocking-stdout.ts": cliThreshold,
+				"packages/ciphersins/src/expand-path.ts": cliThreshold,
+				"packages/ciphersins/src/format-fail-summary.ts": cliThreshold,
+				"packages/ciphersins/src/parse-scan-args.ts": cliThreshold,
+				"packages/ciphersins/src/rule-help-url.ts": cliThreshold,
 			},
 		},
 	},

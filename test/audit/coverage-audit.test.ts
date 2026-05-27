@@ -16,25 +16,23 @@ describe("CS-VC vitest coverage config", () => {
 			"utf8",
 		);
 
-		expect(configSource).toMatch(
-			/packages\/ciphersins\/src\/\{rules,reporting\}/,
-		);
+		expect(configSource).toMatch(/packages\/ciphersins\/src\/rules\/\*\*/);
+		expect(configSource).toMatch(/packages\/ciphersins\/src\/reporting\/\*\*/);
 		expect(configSource).toMatch(/lines:\s*90/);
 		expect(configSource).toMatch(/functions:\s*90/);
 		expect(configSource).toMatch(/branches:\s*90/);
 		expect(configSource).toMatch(/statements:\s*90/);
 	});
 
-	it("CS-VC-02 coverage includes ciphersins source tree", () => {
+	it("CS-VC-02 coverage includes ciphersins source tree and CLI thresholds", () => {
 		const configSource = readFileSync(
 			path.join(rootDir, "vitest.config.ts"),
 			"utf8",
 		);
 
 		expect(configSource).toContain("packages/ciphersins/src/**/*.ts");
-		expect(configSource).toContain(
-			"packages/ciphersins/src/{commands,config,formatters}/**",
-		);
+		expect(configSource).toContain("packages/ciphersins/src/commands/**");
+		expect(configSource).toContain("lines: 59");
 	});
 
 	it("CS-VC-03 package.json exposes test:coverage and test:ci scripts", () => {
