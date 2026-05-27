@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CS-HASH-01 finding shape > CS-HASH-01-43 golden snapshot for create-hash-md5-password.ts 1`] = `
+{
+  "column": 9,
+  "file": "create-hash-md5-password.ts",
+  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-01.md",
+  "line": 4,
+  "message": "Weak hash algorithm (MD5 or SHA1) used where password-related naming suggests password storage; use bcrypt, scrypt, argon2, or PBKDF2.",
+  "ruleId": "CS-HASH-01",
+  "severity": "high",
+  "snippet": "	return crypto.createHash("md5").update(password).digest("hex");",
+}
+`;
+
+exports[`CS-HASH-01 finding shape > CS-HASH-01-44 golden snapshot for pbkdf2-md5-password.ts 1`] = `
+{
+  "column": 9,
+  "file": "pbkdf2-md5-password.ts",
+  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-01.md",
+  "line": 4,
+  "message": "Weak hash algorithm (MD5 or SHA1) used where password-related naming suggests password storage; use bcrypt, scrypt, argon2, or PBKDF2.",
+  "ruleId": "CS-HASH-01",
+  "severity": "high",
+  "snippet": "	return pbkdf2Sync(password, salt, 1000, 32, "md5");",
+}
+`;

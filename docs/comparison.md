@@ -26,6 +26,8 @@ export function getUser(token: string) {
 
 CipherSins uses **AST + import binding resolution** to connect `jwt.decode` to the `jsonwebtoken` module regardless of import style.
 
+CipherSins also flags **MD5/SHA1 password hashing** (`createHash`, weak-digest `pbkdf2`) in application code — neither **npm audit** (dependency CVEs) nor **gitleaks** (secret strings) cover this class of mistake.
+
 ## CipherSins vs npm audit
 
 `npm audit` reports **vulnerable package versions**. A project can run `jsonwebtoken@9.x` with zero CVEs and still authenticate users with decode-only logic. CipherSins catches **how you call** the library.
@@ -34,7 +36,7 @@ CipherSins uses **AST + import binding resolution** to connect `jwt.decode` to t
 
 General SAST tools can encode similar rules, but CipherSins is **purpose-built** for a curated MVP rule set:
 
-- Consistent rule IDs (`CS-JWT-01`, `CS-CMP-01`, `CS-RNG-01`, …)
+- Consistent rule IDs (`CS-JWT-01`, `CS-CMP-01`, `CS-RNG-01`, `CS-HASH-01`, …)
 - Bad/good fixtures per rule
 - Numbered vitest cases per rule
 - Linked rule documentation with fix guidance

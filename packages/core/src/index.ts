@@ -34,4 +34,5 @@ export {
 	csJwt01Rule,
 	csCmp01Rule,
 	csRng01Rule,
+	csHash01Rule,
 } from "./rules/index.js";

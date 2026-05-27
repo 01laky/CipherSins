@@ -3,6 +3,23 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.5.0]
+
+### Added
+
+- **CS-HASH-01** — flags MD5/SHA1 `createHash` / `createHmac`, weak-digest `pbkdf2`/`pbkdf2Sync`, and tracked `md5`/`sha1` package calls in password-named scope chains.
+- Shared helpers: `weak-hash-algorithms`, `password-context`, `hash-bindings`.
+- Fixtures `fixtures/cs-hash-01/{bad,good}/` (26 bad / 14 good).
+- Tests: CS-HASH-01-01–58, CS-PWD-01–15, CS-WHASH-01–06, CS-HBIND-01–13, CS-INT-01–11.
+- **`docs/rules/CS-HASH-01.md`**; smoke-cli HASH regression.
+
+### Changed
+
+- `allRules` registry: CS-JWT-01, CS-CMP-01, CS-RNG-01, CS-HASH-01 (stable order).
+- Scaffold CS-S02 / CS-S48 / CS-S49; CS-INT-08 combined bad total **68** findings.
+- README, comparison, rules index, and `docs/img/rules-overview` diagram updated.
+- CLI `--version` output updated to `0.5.0`.
+
 ## [0.4.2]
 
 ### Fixed

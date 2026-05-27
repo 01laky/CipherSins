@@ -20,7 +20,7 @@ Tagline: _gitleaks for bad crypto API usage_.
 
 ## How many rules are implemented?
 
-**3 of 8** MVP rules at **0.4.2**: CS-JWT-01, CS-CMP-01, CS-RNG-01. See [rules index](./rules/README.md).
+**4 of 8** MVP rules at **0.5.0**: CS-JWT-01, CS-CMP-01, CS-RNG-01, CS-HASH-01. See [rules index](./rules/README.md).
 
 ## Why same-file scope for CS-JWT-01?
 
@@ -48,7 +48,7 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | **CS-AUTH-01–10**   | Auth-material helper   |
 | **CS-INT-01–03**    | Cross-rule integration |
 
-Run `pnpm test` or `npm test` for the full suite (200 tests at v0.4.2).
+Run `pnpm test` or `npm test` for the full suite (298 tests at v0.5.0).
 
 ## Who maintains this?
 

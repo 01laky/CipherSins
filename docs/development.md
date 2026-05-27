@@ -22,7 +22,7 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 | ----------------------------------- | -------------------------------------------------------------- |
 | `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                  |
 | `npm run build`                     | Build `@ciphersins/core` and `ciphersins` CLI (no nested pnpm) |
-| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/CMP/RNG/AUTH/INT tests             |
+| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/CMP/RNG/HASH/AUTH/INT tests        |
 | `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                   |
 | `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`               |
 | `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                   |
@@ -53,7 +53,7 @@ Config file parsing is **not implemented yet**. See [`ciphersins.config.example.
 
 ## Adding a rule
 
-Worked examples: **CS-JWT-01**, **CS-CMP-01**, **CS-RNG-01** in `packages/core/src/rules/`. Shared **`auth-material-names`** helper is reused by CMP and RNG.
+Worked examples: **CS-JWT-01**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01** in `packages/core/src/rules/`. Shared **`auth-material-names`** helper is reused by CMP and RNG; **`password-context`** is HASH-specific (narrower than auth naming).
 
 1. Create `fixtures/<rule-id>/bad/` and `fixtures/<rule-id>/good/` with minimal samples
 2. Implement `Rule` in `packages/core/src/rules/` using AST analysis (no regex-only detection)
@@ -69,7 +69,7 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.4.2` = CI bin link fix; `0.4.1` = build-script fix; `0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
+- Repo version bumps after each completed phase (`0.5.0` = CS-HASH-01; `0.4.2` = CI bin link fix; `0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI
