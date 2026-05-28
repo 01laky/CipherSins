@@ -36,7 +36,7 @@ jobs:
           fail-on: high
           upload-sarif: false
           version: workspace
-          cache-npm: true
+          cache-npm: false
           write-summary: false
 
       - name: Assert bad fixture failed with exit 1

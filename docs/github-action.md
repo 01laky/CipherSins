@@ -34,30 +34,30 @@ jobs:
 
 ## Inputs
 
-| Input                   | Default                                | Description                                               |
-| ----------------------- | -------------------------------------- | --------------------------------------------------------- |
-| `path`                  | `.` (resolves to `./src` when present) | Comma-separated scan roots                                |
-| `version`               | `1.1.0`                                | npm pin for `ciphersins`, or `workspace` for monorepo dev |
-| `fail-on`               | `high`                                 | `low` \| `medium` \| `high` \| `critical` \| `none`       |
-| `format`                | `sarif`                                | `pretty` \| `json` \| `sarif`                             |
-| `output`                | `ciphersins.sarif` / `.json`           | Output file path (empty = stdout)                         |
-| `config`                | —                                      | Explicit `ciphersins.config.json` path                    |
-| `no-config`             | `false`                                | Skip config discovery                                     |
-| `only` / `ignore`       | —                                      | Comma-separated rule IDs                                  |
-| `cwd`                   | workspace root                         | Working directory for paths and config                    |
-| `upload-sarif`          | `true`                                 | Upload to Security tab via `codeql-action/upload-sarif`   |
-| `sarif-category`        | `ciphersins`                           | Upload category (use distinct values per monorepo job)    |
-| `node-version`          | `22`                                   | Node.js ≥ 20                                              |
-| `no-color`              | `true`                                 | Pass `--no-color`                                         |
-| `include` / `exclude`   | —                                      | Comma-separated globs → repeated CLI flags                |
-| `max-findings`          | —                                      | Cap findings count                                        |
-| `allow-critical-ignore` | `false`                                | Allow CS-JWT-03 inline suppressions                       |
-| `verbose`               | `false`                                | Per-file progress on stderr                               |
-| `strict-config`         | `false`                                | Exit 3 on unknown config keys                             |
-| `soft-fail`             | `false`                                | Do not fail step on exit 1 (findings)                     |
-| `cache-npm`             | `true`                                 | Enable npm cache in `setup-node`                          |
-| `write-summary`         | `true`                                 | Write severity table to job summary                       |
-| `scan-title`            | `CipherSins`                           | Job summary heading                                       |
+| Input                   | Default                                | Description                                                                                     |
+| ----------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `path`                  | `.` (resolves to `./src` when present) | Comma-separated scan roots                                                                      |
+| `version`               | `1.1.0`                                | npm pin for `ciphersins`, or `workspace` for monorepo dev                                       |
+| `fail-on`               | `high`                                 | `low` \| `medium` \| `high` \| `critical` \| `none`                                             |
+| `format`                | `sarif`                                | `pretty` \| `json` \| `sarif`                                                                   |
+| `output`                | `ciphersins.sarif` / `.json`           | Output file path (empty = stdout)                                                               |
+| `config`                | —                                      | Explicit `ciphersins.config.json` path                                                          |
+| `no-config`             | `false`                                | Skip config discovery                                                                           |
+| `only` / `ignore`       | —                                      | Comma-separated rule IDs                                                                        |
+| `cwd`                   | workspace root                         | Working directory for paths and config                                                          |
+| `upload-sarif`          | `true`                                 | Upload to Security tab via `codeql-action/upload-sarif`                                         |
+| `sarif-category`        | `ciphersins`                           | Upload category (use distinct values per monorepo job)                                          |
+| `node-version`          | `22`                                   | Node.js ≥ 20                                                                                    |
+| `no-color`              | `true`                                 | Pass `--no-color`                                                                               |
+| `include` / `exclude`   | —                                      | Comma-separated globs → repeated CLI flags                                                      |
+| `max-findings`          | —                                      | Cap findings count                                                                              |
+| `allow-critical-ignore` | `false`                                | Allow CS-JWT-03 inline suppressions                                                             |
+| `verbose`               | `false`                                | Per-file progress on stderr                                                                     |
+| `strict-config`         | `false`                                | Exit 3 on unknown config keys                                                                   |
+| `soft-fail`             | `false`                                | Do not fail step on exit 1 (findings)                                                           |
+| `cache-npm`             | `false`                                | Enable npm cache in `setup-node` (needs `package-lock.json`; ignored when `version: workspace`) |
+| `write-summary`         | `true`                                 | Write severity table to job summary                                                             |
+| `scan-title`            | `CipherSins`                           | Job summary heading                                                                             |
 
 ## Outputs
 

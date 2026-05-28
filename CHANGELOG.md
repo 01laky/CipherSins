@@ -17,6 +17,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 ### Fixed
 
 - **run.sh summary on Node 20** — extract `write-summary.mjs` instead of inline `node -e` ESM import.
+- **Action npm cache on pnpm repos** — default `cache-npm` to `false`; skip npm cache when `version: workspace` (fixes action-smoke and self-scan CI on pnpm monorepos without `package-lock.json`).
 
 ### Changed
 

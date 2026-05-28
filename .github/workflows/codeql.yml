@@ -66,6 +66,7 @@ jobs:
           fail-on: none
           no-config: true
           version: workspace
+          cache-npm: false
           upload-sarif: true
           sarif-category: ciphersins
           write-summary: true

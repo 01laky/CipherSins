@@ -55,6 +55,8 @@ describe("CS-ACT GitHub Action", () => {
 		expect(source).toMatch(/fail-on:[\s\S]*default: "high"/);
 		expect(source).toMatch(/format:[\s\S]*default: "sarif"/);
 		expect(source).toMatch(/no-color:[\s\S]*default: "true"/);
+		expect(source).toMatch(/cache-npm:[\s\S]*default: "false"/);
+		expect(source).toContain("inputs.version != 'workspace'");
 	});
 
 	it("CS-ACT-04 run.sh resolves ./src when directory exists", () => {

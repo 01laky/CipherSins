@@ -90,9 +90,9 @@ inputs:
     required: false
     default: "false"
   cache-npm:
-    description: Enable npm cache via setup-node
+    description: Enable npm cache via setup-node (requires package-lock.json in the repo)
     required: false
-    default: "true"
+    default: "false"
   write-summary:
     description: Write severity table to GITHUB_STEP_SUMMARY
     required: false
@@ -123,7 +123,7 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
-        cache: ${{ inputs.cache-npm == 'true' && 'npm' || '' }}
+        cache: ${{ inputs.cache-npm == 'true' && inputs.version != 'workspace' && 'npm' || '' }}
 
     - name: CipherSins scan
       id: scan
