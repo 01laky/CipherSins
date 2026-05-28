@@ -12,7 +12,7 @@ import { verifyCallSuppressesDecode } from "./helpers/jsonwebtoken-verify-scope.
 
 const RULE_ID = "CS-JWT-01";
 const MESSAGE =
-	"jwt.decode() used without jwt.verify() in the same function scope.";
+	"jwt.decode() used without jwt.verify() in the same function scope or a directly called helper.";
 const HELP_URL =
 	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md";
 
@@ -53,7 +53,7 @@ export const csJwt01Rule: Rule = {
 
 			if (
 				verifyCalls.some((verifyCall) =>
-					verifyCallSuppressesDecode(call, verifyCall),
+					verifyCallSuppressesDecode(call, verifyCall, context.sourceFile),
 				)
 			) {
 				continue;

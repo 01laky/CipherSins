@@ -729,9 +729,9 @@ describe("CS-JWT-03 extended edge cases", () => {
 		const result = await scan({ paths: allBadDirs, cwd: rootDir });
 
 		expect(result.summary.critical).toBe(27);
-		expect(result.summary.high).toBe(115);
-		expect(result.summary.medium).toBe(49);
-		expect(result.findings).toHaveLength(191);
+		expect(result.summary.high).toBe(116);
+		expect(result.summary.medium).toBe(51);
+		expect(result.findings).toHaveLength(194);
 	});
 
 	it("CS-JWT-03-73 verify-algorithms-none-and-hs256.ts yields exactly one finding", async () => {

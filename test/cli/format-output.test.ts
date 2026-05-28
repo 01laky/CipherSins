@@ -251,7 +251,7 @@ describe("CS-CLI format and output integration", () => {
 		]);
 		expect(result.status).toBe(1);
 		const doc = JSON.parse(result.stdout);
-		expect(doc.summary.total).toBe(191);
+		expect(doc.summary.total).toBe(194);
 	}, 30_000);
 
 	it("CS-CLI-48 jwt-03 bad fail-on high quiet --no-config exits 1 with stderr summary", () => {

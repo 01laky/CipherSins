@@ -28,7 +28,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## Why same-file scope for CS-JWT-01?
 
-v1.0 flags decode when **no `jwt.verify()` exists in the same function scope** as the decode call (including nested inner functions). Verify in a sibling helper does not suppress decode. Cross-file helpers remain a known limitation — see [CS-JWT-01](./rules/CS-JWT-01.md).
+v1.1 flags decode when **no `jwt.verify()` exists in the same function scope** as the decode call (including nested inner functions) **or in a direct callee helper** (v1.1). Verify in a sibling helper does not suppress decode. Cross-file helpers remain a known limitation — see [CS-JWT-01](./rules/CS-JWT-01.md).
 
 Unreachable `if (false) { jwt.verify(...) }` still suppresses findings — v1 does not perform control-flow analysis.
 

@@ -424,7 +424,7 @@ describe("CS-CLI extended edge cases — JSON output contract", () => {
 			doc.summary.high +
 			doc.summary.critical;
 		expect(doc.summary.total).toBe(sum);
-		expect(doc.summary.total).toBe(191);
+		expect(doc.summary.total).toBe(194);
 	});
 
 	it("CS-CLI-EXT-39 JSON version field matches package version", () => {

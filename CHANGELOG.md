@@ -3,6 +3,33 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.1.0]
+
+### Added
+
+- **GitHub Action** — composite action at `.github/actions/scan` for CI scans with SARIF upload, job summary, soft-fail, and npm cache.
+- **Action inputs** — `soft-fail`, `cache-npm`, `write-summary`, `scan-title`, `sarif-category`, plus full CLI flag parity; `version: workspace` for monorepo dev.
+- **docs/github-action.md** — Action reference, monorepo, Code Scanning, fork PR notes.
+- **action-smoke.yml** — local composite + tagged consumer smoke workflows.
+- **CS-ACT-01..18** — Action schema, run.sh shell integration (CS-ACT-RUN), and summary parser tests.
+- **JWT edge-case tests** — CS-JWT-01 direct-callee and CS-JWT-04 variable/spread expiration coverage.
+
+### Fixed
+
+- **run.sh summary on Node 20** — extract `write-summary.mjs` instead of inline `node -e` ESM import.
+
+### Changed
+
+- **CS-JWT-01** — direct-callee verify suppresses decode (same file, one call hop); message updated.
+- **CS-JWT-04** — flags `ignoreExpiration` via variable-bound options and spread from object literals.
+- **codeql.yml** — self-scan uses composite action instead of raw `node dist/cli.js`.
+- **Rules overview diagram** — JWT-01/JWT-04 flow labels updated.
+
+### Documentation
+
+- README and cli.md updated with Action-first CI setup.
+- `docs/releasing.md` — Publishing the GitHub Action (tags `v1.1.0`, floating `v1`).
+
 ## [1.0.2]
 
 ### Changed

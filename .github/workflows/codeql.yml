@@ -58,15 +58,15 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: npm run build
       - name: CipherSins self-scan
-        run: |
-          node packages/ciphersins/dist/cli.js scan packages test \
-            --format sarif \
-            --output ciphersins.sarif \
-            --fail-on none \
-            --no-config
-
-      - uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        uses: ./.github/actions/scan
         with:
-          sarif_file: ciphersins.sarif
-          category: ciphersins
+          path: packages,test
+          format: sarif
+          output: ciphersins.sarif
+          fail-on: none
+          no-config: true
+          version: workspace
+          upload-sarif: true
+          sarif-category: ciphersins
+          write-summary: true
+          scan-title: CipherSins self-scan

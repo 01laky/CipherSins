@@ -1,0 +1,90 @@
+name: action-smoke
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  action-local:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: npm run build
+
+      - name: Bad fixture should fail
+        uses: ./.github/actions/scan
+        continue-on-error: true
+        id: bad-scan
+        with:
+          path: test/fixtures/ci
+          fail-on: high
+          upload-sarif: false
+          version: workspace
+          cache-npm: true
+          write-summary: false
+
+      - name: Assert bad fixture failed with exit 1
+        run: test "${{ steps.bad-scan.outputs.exit-code }}" = "1"
+
+      - name: Good fixture should pass
+        uses: ./.github/actions/scan
+        with:
+          path: fixtures/cs-jwt-01/good
+          fail-on: high
+          upload-sarif: false
+          version: workspace
+          format: json
+          write-summary: true
+          scan-title: CipherSins smoke (good)
+
+      - name: Soft-fail allows exit 1
+        uses: ./.github/actions/scan
+        with:
+          path: test/fixtures/ci
+          fail-on: high
+          soft-fail: true
+          upload-sarif: false
+          version: workspace
+          write-summary: false
+
+  action-tagged:
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: npm run build
+
+      - uses: ./.github/actions/scan
+        with:
+          path: test/fixtures/ci
+          fail-on: none
+          upload-sarif: false
+          version: workspace
+          scan-title: CipherSins tagged smoke

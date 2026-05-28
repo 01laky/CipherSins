@@ -731,9 +731,9 @@ describe("CS-JWT-02 extended edge cases", () => {
 		];
 		const result = await scan({ paths: allBad, cwd: rootDir });
 
-		expect(result.summary.high).toBe(115);
+		expect(result.summary.high).toBe(116);
 		expect(result.summary.medium).toBe(29);
-		expect(result.findings).toHaveLength(144);
+		expect(result.findings).toHaveLength(145);
 	});
 
 	it("CS-JWT-02-73 verify-optional-chaining.ts column on verify call", async () => {

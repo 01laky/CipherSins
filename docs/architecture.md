@@ -36,7 +36,7 @@ Each rule resolves import/require bindings, walks relevant AST nodes, applies ca
 
 ## Rule detection (CS-JWT-01 example)
 
-CS-JWT-01 suppresses a decode finding when a tracked `jwt.verify()` exists in the **same function scope** (including nested inner functions). **CS-JWT-02** independently flags tracked `verify()` calls missing explicit `{ algorithms: [...] }`. **CS-JWT-03** flags verify/sign options that allow or use **`none`**. **CS-JWT-04** flags `ignoreExpiration: true`. Other rules use their own gates (e.g. CS-CMP-01 requires a crypto/auth import; CS-HASH-02 has no import gate).
+CS-JWT-01 suppresses a decode finding when a tracked `jwt.verify()` exists in the **same function scope** (including nested inner functions) or in a **direct callee helper** (v1.1). **CS-JWT-02** independently flags tracked `verify()` calls missing explicit `{ algorithms: [...] }`. **CS-JWT-03** flags verify/sign options that allow or use **`none`**. **CS-JWT-04** flags `ignoreExpiration: true` (including variable/spread options in v1.1). Other rules use their own gates (e.g. CS-CMP-01 requires a crypto/auth import; CS-HASH-02 has no import gate).
 
 ![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/CipherSins/main/docs/img/rules-overview.svg)
 

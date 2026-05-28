@@ -378,11 +378,27 @@ describe("jwt expiration helpers", () => {
 		expect(verifyCallIgnoresExpiration(call)).toBe(false);
 	});
 
-	it("CS-JWT-EXP-05 options identifier is not ignoreExpiration in v1", () => {
+	it("CS-JWT-EXP-05 options identifier with literal ignoreExpiration is detected", () => {
+		const source =
+			"import jwt from 'jsonwebtoken';\nconst opts = { ignoreExpiration: true };\njwt.verify(token, secret, opts);\n";
+		const call = verifyCallFrom(source);
+		const sourceFile = parseSourceFile("snippet.ts", source);
+		expect(verifyCallIgnoresExpiration(call, sourceFile)).toBe(true);
+	});
+
+	it("CS-JWT-EXP-05b options identifier without sourceFile stays false", () => {
 		const call = verifyCallFrom(
 			"import jwt from 'jsonwebtoken';\nconst opts = { ignoreExpiration: true };\njwt.verify(token, secret, opts);\n",
 		);
 		expect(verifyCallIgnoresExpiration(call)).toBe(false);
+	});
+
+	it("CS-JWT-EXP-05c spread options with ignoreExpiration is detected", () => {
+		const source =
+			"import jwt from 'jsonwebtoken';\nconst base = { ignoreExpiration: true };\njwt.verify(token, secret, { ...base });\n";
+		const call = verifyCallFrom(source);
+		const sourceFile = parseSourceFile("snippet.ts", source);
+		expect(verifyCallIgnoresExpiration(call, sourceFile)).toBe(true);
 	});
 
 	it("CS-JWT-EXP-06 complete and ignoreExpiration true is detected", () => {

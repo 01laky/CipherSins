@@ -91,10 +91,10 @@ describe("cross-rule integration", () => {
 		const byRule = (ruleId: string) =>
 			result.findings.filter((f) => f.ruleId === ruleId).length;
 
-		expect(byRule("CS-JWT-01")).toBe(17);
+		expect(byRule("CS-JWT-01")).toBe(18);
 		expect(byRule("CS-CMP-01")).toBe(18);
 		expect(byRule("CS-RNG-01")).toBe(19);
-		expect(result.findings).toHaveLength(54);
+		expect(result.findings).toHaveLength(55);
 	});
 
 	it("CS-INT-05 cmp and rng good directories stay clean when scanned together", async () => {
@@ -142,18 +142,18 @@ describe("cross-rule integration", () => {
 		const byRule = (ruleId: string) =>
 			result.findings.filter((f) => f.ruleId === ruleId).length;
 
-		expect(byRule("CS-JWT-01")).toBe(17);
+		expect(byRule("CS-JWT-01")).toBe(18);
 		expect(byRule("CS-JWT-02")).toBe(28);
 		expect(byRule("CS-JWT-03")).toBe(27);
-		expect(byRule("CS-JWT-04")).toBe(21);
+		expect(byRule("CS-JWT-04")).toBe(23);
 		expect(byRule("CS-CMP-01")).toBe(18);
 		expect(byRule("CS-RNG-01")).toBe(19);
 		expect(byRule("CS-HASH-01")).toBe(33);
 		expect(byRule("CS-HASH-02")).toBe(28);
-		expect(result.findings).toHaveLength(191);
+		expect(result.findings).toHaveLength(194);
 		expect(result.summary.critical).toBe(27);
-		expect(result.summary.high).toBe(115);
-		expect(result.summary.medium).toBe(49);
+		expect(result.summary.high).toBe(116);
+		expect(result.summary.medium).toBe(51);
 	});
 
 	it("CS-INT-09 jwt good fixtures stay clean with eight rules active", async () => {
@@ -251,7 +251,7 @@ describe("cross-rule integration", () => {
 
 		expect(result.findings).toHaveLength(1);
 		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
-		expect(result.scannedFiles).toHaveLength(125);
+		expect(result.scannedFiles).toHaveLength(126);
 	});
 
 	it("CS-INT-18 decode-and-verify-no-algorithms.ts yields JWT-02 only", async () => {
@@ -390,7 +390,7 @@ describe("cross-rule integration", () => {
 	it("CS-INT-30 eight good dirs file count exact", async () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
-		expect(result.scannedFiles).toHaveLength(125);
+		expect(result.scannedFiles).toHaveLength(126);
 		expect(result.findings).toHaveLength(1);
 		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
 	});
@@ -451,8 +451,8 @@ describe("cross-rule integration", () => {
 
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-JWT-04"),
-		).toHaveLength(19);
-		expect(result.summary.medium).toBe(19);
+		).toHaveLength(21);
+		expect(result.summary.medium).toBe(21);
 	});
 
 	it("CS-INT-36 jwt-03 good and cmp bad yields only CMP findings", async () => {

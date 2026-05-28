@@ -19,7 +19,7 @@ const jwtGoodDir = path.join(rootDir, "fixtures/cs-jwt-01/good");
 const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
 const CS_JWT_01_MESSAGE =
-	"jwt.decode() used without jwt.verify() in the same function scope.";
+	"jwt.decode() used without jwt.verify() in the same function scope or a directly called helper.";
 
 function fixturePath(segment: "bad" | "good", name: string): string {
 	return path.join(rootDir, "fixtures/cs-jwt-01", segment, name);
@@ -73,8 +73,8 @@ describe("CS-JWT-01 directory scans", () => {
 	it("CS-JWT-01-02 flags bad fixtures with high severity", async () => {
 		const result = await scan({ paths: [jwtBadDir], cwd: rootDir });
 
-		expect(result.findings).toHaveLength(17);
-		expect(result.scannedFiles).toHaveLength(15);
+		expect(result.findings).toHaveLength(18);
+		expect(result.scannedFiles).toHaveLength(16);
 		expect(result.findings.every((f) => f.ruleId === "CS-JWT-01")).toBe(true);
 		expect(result.findings.every((f) => f.severity === "high")).toBe(true);
 		expect(result.findings.every((f) => f.message === CS_JWT_01_MESSAGE)).toBe(
@@ -515,7 +515,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const jwtFindings = result.findings.filter((f) => f.ruleId === "CS-JWT-01");
 
 		expect(result.summary.high).toBe(jwtFindings.length);
-		expect(result.summary.high).toBe(17);
+		expect(result.summary.high).toBe(18);
 		expect(result.summary.medium).toBe(0);
 	});
 
@@ -523,7 +523,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(14);
+		expect(result.scannedFiles).toHaveLength(15);
 	});
 
 	it("CS-JWT-01-46 bad directory finding signatures are unique", async () => {
@@ -531,7 +531,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const signatures = result.findings.map(findingSignature);
 
 		expect(new Set(signatures).size).toBe(signatures.length);
-		expect(signatures).toHaveLength(17);
+		expect(signatures).toHaveLength(18);
 	});
 
 	it("CS-JWT-01-47 CLI bad scan output matches default-import-decode-only.ts line format", () => {
@@ -581,7 +581,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(14);
+		expect(result.scannedFiles).toHaveLength(15);
 	});
 });
 
@@ -800,5 +800,26 @@ describe("CS-JWT-01 audit section 9.1", () => {
 	it("CS-JWT-01-85 shadowed verify binding does not suppress decode finding", () => {
 		const source = `${jwtImport}const verify = (t: string) => t;\nexport function read(t: string) { verify(t); return jwt.decode(t); }\n`;
 		expectDecodeFinding(runJwt01OnSource("shadowed-verify.ts", source));
+	});
+
+	it("CS-JWT-01-89 direct callee verify suppresses decode in caller", async () => {
+		const result = await scan({
+			paths: [fixturePath("good", "verify-in-direct-callee.ts")],
+			cwd: rootDir,
+		});
+		expect(
+			result.findings.filter((finding) => finding.ruleId === "CS-JWT-01"),
+		).toEqual([]);
+	});
+
+	it("CS-JWT-01-90 unrelated helper verify does not suppress decode", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "verify-in-unrelated-helper.ts")],
+			cwd: rootDir,
+		});
+		expect(
+			result.findings.filter((finding) => finding.ruleId === "CS-JWT-01")
+				.length,
+		).toBeGreaterThanOrEqual(1);
 	});
 });

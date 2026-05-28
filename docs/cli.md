@@ -53,7 +53,7 @@ Each finding is printed as:
 
 ```text
 relative/path.ts:line:column  CS-JWT-01  high
-  jwt.decode() used without jwt.verify() in the same function scope.
+  jwt.decode() used without jwt.verify() in the same function scope or a directly called helper.
   > 4 |   const payload = jwt.decode(token);
       ^
   https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md
@@ -236,11 +236,31 @@ const payload = jwt.decode(token); // ciphersins-ignore CS-JWT-01
 
 ## GitHub Actions example
 
-Published package:
+**Recommended:** use the composite Action ([docs/github-action.md](./github-action.md)):
+
+```yaml
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  ciphersins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: 01laky/CipherSins/.github/actions/scan@v1.1.0
+        with:
+          path: ./src
+          fail-on: high
+          format: sarif
+          upload-sarif: true
+```
+
+Manual `npx` fallback:
 
 ```yaml
 - name: CipherSins scan
-  run: npx ciphersins@1.0.0 scan ./src --format sarif --output ciphersins.sarif --fail-on high
+  run: npx ciphersins@1.1.0 scan ./src --format sarif --output ciphersins.sarif --fail-on high --no-color
 
 - name: Upload SARIF
   uses: github/codeql-action/upload-sarif@v3
@@ -248,7 +268,7 @@ Published package:
     sarif_file: ciphersins.sarif
 ```
 
-Monorepo / source build:
+Monorepo / source build (development):
 
 ```yaml
 - name: CipherSins scan
@@ -257,7 +277,8 @@ Monorepo / source build:
     node packages/ciphersins/dist/cli.js scan ./src \
       --format sarif \
       --output ciphersins.sarif \
-      --fail-on high
+      --fail-on high \
+      --no-color
 ```
 
 ## Examples

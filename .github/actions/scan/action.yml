@@ -1,0 +1,164 @@
+name: CipherSins Scan
+description: Run CipherSins static analysis for crypto API misuse in CI with SARIF upload.
+branding:
+  icon: shield
+  color: orange
+
+inputs:
+  path:
+    description: Path(s) to scan (comma-separated). Defaults to ./src when present, else .
+    required: false
+    default: "."
+  version:
+    description: npm version pin for ciphersins
+    required: false
+    default: "1.1.0"
+  fail-on:
+    description: Severity threshold for exit code 1 (low|medium|high|critical|none)
+    required: false
+    default: "high"
+  format:
+    description: Output format (pretty|json|sarif)
+    required: false
+    default: "sarif"
+  output:
+    description: Output file path relative to cwd (default ciphersins.sarif or ciphersins.json)
+    required: false
+    default: ""
+  config:
+    description: Path to ciphersins.config.json
+    required: false
+    default: ""
+  no-config:
+    description: Skip ciphersins.config.json discovery
+    required: false
+    default: "false"
+  only:
+    description: Comma-separated rule IDs to run exclusively
+    required: false
+    default: ""
+  ignore:
+    description: Comma-separated rule IDs to skip
+    required: false
+    default: ""
+  cwd:
+    description: Working directory for scan and config discovery
+    required: false
+    default: ""
+  upload-sarif:
+    description: Upload SARIF to GitHub Security tab
+    required: false
+    default: "true"
+  sarif-category:
+    description: SARIF upload category (for multiple scans in one repo)
+    required: false
+    default: "ciphersins"
+  node-version:
+    description: Node.js version (>= 20)
+    required: false
+    default: "22"
+  no-color:
+    description: Pass --no-color to CLI
+    required: false
+    default: "true"
+  include:
+    description: Comma-separated include globs (maps to repeated --include)
+    required: false
+    default: ""
+  exclude:
+    description: Comma-separated exclude globs (maps to repeated --exclude)
+    required: false
+    default: ""
+  max-findings:
+    description: Cap findings count
+    required: false
+    default: ""
+  allow-critical-ignore:
+    description: Allow inline suppressions for critical findings (CS-JWT-03)
+    required: false
+    default: "false"
+  verbose:
+    description: Print per-file scan progress to stderr
+    required: false
+    default: "false"
+  strict-config:
+    description: Exit 3 when config contains unknown keys
+    required: false
+    default: "false"
+  soft-fail:
+    description: Do not fail the step on exit code 1 (findings); still fail on 2-4
+    required: false
+    default: "false"
+  cache-npm:
+    description: Enable npm cache via setup-node
+    required: false
+    default: "true"
+  write-summary:
+    description: Write severity table to GITHUB_STEP_SUMMARY
+    required: false
+    default: "true"
+  scan-title:
+    description: Heading for job summary markdown
+    required: false
+    default: "CipherSins"
+
+outputs:
+  exit-code:
+    description: CLI exit code (0, 1, 2, 3, 4)
+    value: ${{ steps.scan.outputs.exit-code }}
+  findings-count:
+    description: Total findings count when output file was parsed
+    value: ${{ steps.scan.outputs.findings-count }}
+  summary:
+    description: One-line human summary
+    value: ${{ steps.scan.outputs.summary }}
+  sarif-path:
+    description: Absolute path to SARIF file when generated
+    value: ${{ steps.scan.outputs.sarif-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache-npm == 'true' && 'npm' || '' }}
+
+    - name: CipherSins scan
+      id: scan
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_VERSION: ${{ inputs.version }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_FORMAT: ${{ inputs.format }}
+        INPUT_OUTPUT: ${{ inputs.output }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_NO_CONFIG: ${{ inputs.no-config }}
+        INPUT_ONLY: ${{ inputs.only }}
+        INPUT_IGNORE: ${{ inputs.ignore }}
+        INPUT_CWD: ${{ inputs.cwd }}
+        INPUT_NO_COLOR: ${{ inputs.no-color }}
+        INPUT_INCLUDE: ${{ inputs.include }}
+        INPUT_EXCLUDE: ${{ inputs.exclude }}
+        INPUT_MAX_FINDINGS: ${{ inputs.max-findings }}
+        INPUT_ALLOW_CRITICAL_IGNORE: ${{ inputs.allow-critical-ignore }}
+        INPUT_VERBOSE: ${{ inputs.verbose }}
+        INPUT_STRICT_CONFIG: ${{ inputs.strict-config }}
+        INPUT_SOFT_FAIL: ${{ inputs.soft-fail }}
+        INPUT_WRITE_SUMMARY: ${{ inputs.write-summary }}
+        INPUT_SCAN_TITLE: ${{ inputs.scan-title }}
+      run: bash "$GITHUB_ACTION_PATH/run.sh"
+
+    - name: Upload SARIF
+      if: >-
+        inputs.upload-sarif == 'true' &&
+        inputs.format == 'sarif' &&
+        steps.scan.outputs.sarif-path != '' &&
+        (github.event_name != 'pull_request' ||
+         github.event.pull_request.head.repo.full_name == github.repository)
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif-path }}
+        category: ${{ inputs.sarif-category }}

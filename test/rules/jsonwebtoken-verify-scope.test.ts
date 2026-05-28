@@ -8,7 +8,7 @@ const rootDir = path.resolve(testDir, "../..");
 const jwtImport = 'import jwt from "jsonwebtoken";\n';
 
 const CS_JWT_01_MESSAGE =
-	"jwt.decode() used without jwt.verify() in the same function scope.";
+	"jwt.decode() used without jwt.verify() in the same function scope or a directly called helper.";
 
 function runJwt01OnSource(fileName: string, source: string) {
 	const sourceFile = parseSourceFile(fileName, source);
@@ -52,5 +52,17 @@ function verifyOnly() { jwt.verify("t", "s", { algorithms: ["HS256"] }); }
 			runJwt01OnSource("module-decode-fn-verify.ts", moduleDecodeFnVerify)[0]
 				?.message,
 		).toBe(CS_JWT_01_MESSAGE);
+	});
+
+	it("CS-JWT-01-89 direct callee verify suppresses decode in caller", () => {
+		const source = `${jwtImport}function verifyToken(t: string) {
+  return jwt.verify(t, "s", { algorithms: ["HS256"] });
+}
+export function read(t: string) {
+  const payload = jwt.decode(t);
+  return verifyToken(t) ?? payload;
+}
+`;
+		expect(runJwt01OnSource("direct-callee.ts", source)).toEqual([]);
 	});
 });

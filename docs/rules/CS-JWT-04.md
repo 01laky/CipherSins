@@ -80,7 +80,9 @@ Manual expiry enforcement in the same function (for example comparing `payload.e
 
 See also **[Limitations](#limitations)** below.
 
-- `ignoreExpiration` loaded from a variable or spread from another object
+- `ignoreExpiration` in inline object literals (including truthy non-boolean values)
+- **v1.1:** `const opts = { ignoreExpiration: true }` passed as third argument
+- **v1.1:** spread from variable object literal `{ ...base }` when `base` contains `ignoreExpiration: true`
 - Verify calls with no `ignoreExpiration` but also no evidence of manual `exp` handling
 
 ### Suppressing

@@ -275,10 +275,106 @@ export function objectLiteralIgnoresExpiration(
 	return false;
 }
 
-export function verifyCallIgnoresExpiration(call: ts.CallExpression): boolean {
+function findVariableObjectLiteralInitializer(
+	sourceFile: ts.SourceFile,
+	name: string,
+): ts.ObjectLiteralExpression | undefined {
+	let found: ts.ObjectLiteralExpression | undefined;
+
+	function visit(node: ts.Node): void {
+		if (found) {
+			return;
+		}
+		if (ts.isVariableStatement(node)) {
+			for (const decl of node.declarationList.declarations) {
+				if (!ts.isIdentifier(decl.name) || decl.name.text !== name) {
+					continue;
+				}
+				const { initializer } = decl;
+				if (initializer && ts.isObjectLiteralExpression(initializer)) {
+					found = initializer;
+					return;
+				}
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+
+	visit(sourceFile);
+	return found;
+}
+
+function objectLiteralIgnoresExpirationWithSpread(
+	node: ts.ObjectLiteralExpression,
+	sourceFile: ts.SourceFile,
+): boolean {
+	if (objectLiteralIgnoresExpiration(node)) {
+		return true;
+	}
+
+	for (const prop of node.properties) {
+		if (!ts.isSpreadAssignment(prop)) {
+			continue;
+		}
+		const spreadExpr = prop.expression;
+		if (ts.isObjectLiteralExpression(spreadExpr)) {
+			if (objectLiteralIgnoresExpirationWithSpread(spreadExpr, sourceFile)) {
+				return true;
+			}
+			continue;
+		}
+		if (ts.isIdentifier(spreadExpr)) {
+			const spreadInit = findVariableObjectLiteralInitializer(
+				sourceFile,
+				spreadExpr.text,
+			);
+			if (
+				spreadInit &&
+				objectLiteralIgnoresExpirationWithSpread(spreadInit, sourceFile)
+			) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+function resolveVerifyOptionsObjectLiteral(
+	expression: ts.Expression,
+	sourceFile: ts.SourceFile,
+): ts.ObjectLiteralExpression | undefined {
+	if (ts.isObjectLiteralExpression(expression)) {
+		return expression;
+	}
+	if (ts.isIdentifier(expression)) {
+		return findVariableObjectLiteralInitializer(sourceFile, expression.text);
+	}
+	return undefined;
+}
+
+export function verifyCallIgnoresExpiration(
+	call: ts.CallExpression,
+	sourceFile?: ts.SourceFile,
+): boolean {
 	const optionsArg = getVerifyOptionsArgument(call);
-	if (!optionsArg || !ts.isObjectLiteralExpression(optionsArg)) {
+	if (!optionsArg) {
 		return false;
 	}
-	return objectLiteralIgnoresExpiration(optionsArg);
+
+	if (ts.isObjectLiteralExpression(optionsArg)) {
+		if (sourceFile) {
+			return objectLiteralIgnoresExpirationWithSpread(optionsArg, sourceFile);
+		}
+		return objectLiteralIgnoresExpiration(optionsArg);
+	}
+
+	if (sourceFile && ts.isIdentifier(optionsArg)) {
+		const resolved = resolveVerifyOptionsObjectLiteral(optionsArg, sourceFile);
+		if (resolved) {
+			return objectLiteralIgnoresExpirationWithSpread(resolved, sourceFile);
+		}
+	}
+
+	return false;
 }

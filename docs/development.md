@@ -18,15 +18,15 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 
 ## Common commands
 
-| Command                             | Purpose                                                                                                                  |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                                                                            |
-| `npm run build`                     | Build publishable `ciphersins` package (engine + CLI)                                                                    |
-| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1164** at v1.0.2) |
-| `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                                                                             |
-| `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`                                                                         |
-| `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                                                                             |
-| `npm run format:fix`                | Apply Prettier (tabs)                                                                                                    |
+| Command                             | Purpose                                                                                                                          |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                                                                                    |
+| `npm run build`                     | Build publishable `ciphersins` package (engine + CLI)                                                                            |
+| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1192** at v1.1.0) |
+| `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                                                                                     |
+| `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`                                                                                 |
+| `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                                                                                     |
+| `npm run format:fix`                | Apply Prettier (tabs)                                                                                                            |
 
 \*Root scripts invoke **`npm run`** internally so **`npm run build`** works even when Corepack cannot launch nested **`pnpm`**.
 

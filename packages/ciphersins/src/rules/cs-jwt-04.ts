@@ -46,7 +46,7 @@ export const csJwt04Rule: Rule = {
 			if (!matchesJsonWebTokenMethodCall(call, bindings, "verify")) {
 				continue;
 			}
-			if (!verifyCallIgnoresExpiration(call)) {
+			if (!verifyCallIgnoresExpiration(call, context.sourceFile)) {
 				continue;
 			}
 

@@ -14,7 +14,7 @@ flowchart TB
 	subgraph JWT_FLOW["CS-JWT-01"]
 		BIND["getJsonWebTokenBindings()"]
 		WALK["collectCallExpressions()"]
-		VERIFY{"verify in same function scope?"}
+		VERIFY{"verify in scope or direct helper?"}
 		DECODE["decode call sites"]
 		BIND --> WALK --> DECODE --> VERIFY
 		VERIFY -->|yes| JCLEAN["skip decode finding"]
@@ -43,7 +43,7 @@ flowchart TB
 		BIND4["getJsonWebTokenBindings()"]
 		WALK4["collectCallExpressions()"]
 		VMATCH4["tracked jwt.verify()"]
-		VEXP{"verifyCallIgnoresExpiration()?"}
+		VEXP{"verifyCallIgnoresExpiration() incl. variable/spread?"}
 		BIND4 --> WALK4 --> VMATCH4 --> VEXP
 		VEXP -->|yes| J4FIND["createFinding() · medium"]
 	end
