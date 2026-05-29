@@ -5,6 +5,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -1466,20 +1467,28 @@ function writeFixtureMatrixTests(fixtureCases) {
 	]);
 	const goodDeliberateFindings = new Set(["node-rs-bcrypt-untracked.ts"]);
 
+	const badLimitationList = [...badLimitationFixtures];
+	const goodDeliberateList = [...goodDeliberateFindings];
+
 	const tests = fixtureCases
 		.map(
 			(c) => `
 	it("CS-V131-FIX-${c.id} ${c.label.replace(/"/g, "'")}", async () => {
-		const result = await scan({ paths: [path.join(rootDir, ${JSON.stringify(c.relPath)})], cwd: rootDir });
+		const result = await scan({
+			paths: [path.join(rootDir, ${JSON.stringify(c.relPath)})],
+			cwd: rootDir,
+		});
 		const count = countRule(result.findings, ${JSON.stringify(c.ruleId)});
 		const fileName = ${JSON.stringify(path.basename(c.filePath))};
 		if (${JSON.stringify(c.kind)} === "bad") {
-			if (${JSON.stringify([...badLimitationFixtures])}.includes(fileName)) {
+			if (
+				${JSON.stringify(badLimitationList, null, "\t").replace(/\n\t\t/g, "\n\t\t\t")}.includes(fileName)
+			) {
 				expect(count).toBe(0);
 			} else {
 				expect(count).toBeGreaterThanOrEqual(1);
 			}
-		} else if (${JSON.stringify([...goodDeliberateFindings])}.includes(fileName)) {
+		} else if (${JSON.stringify(goodDeliberateList, null, "\t").replace(/\n\t\t/g, "\n\t\t\t")}.includes(fileName)) {
 			expect(count).toBeGreaterThanOrEqual(1);
 		} else {
 			expect(count).toBe(0);
