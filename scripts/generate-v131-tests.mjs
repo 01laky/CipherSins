@@ -1446,6 +1446,7 @@ function collectFixtureCases() {
 					id: pad(n++),
 					label: `${ruleId} ${kind} ${file}`,
 					filePath,
+					relPath: path.relative(root, filePath).split(path.sep).join("/"),
 					ruleId,
 					kind,
 				});
@@ -1469,7 +1470,7 @@ function writeFixtureMatrixTests(fixtureCases) {
 		.map(
 			(c) => `
 	it("CS-V131-FIX-${c.id} ${c.label.replace(/"/g, "'")}", async () => {
-		const result = await scan({ paths: [${JSON.stringify(c.filePath)}], cwd: rootDir });
+		const result = await scan({ paths: [path.join(rootDir, ${JSON.stringify(c.relPath)})], cwd: rootDir });
 		const count = countRule(result.findings, ${JSON.stringify(c.ruleId)});
 		const fileName = ${JSON.stringify(path.basename(c.filePath))};
 		if (${JSON.stringify(c.kind)} === "bad") {
