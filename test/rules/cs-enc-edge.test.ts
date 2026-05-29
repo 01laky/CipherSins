@@ -520,7 +520,7 @@ describe("CS-ENC-02 extended edge cases", () => {
 		expect(filterByRule(result.findings, "CS-ENC-02")).toHaveLength(2);
 	});
 
-	it("CS-ENC-EDGE-35 triple reuse of same GCM nonce flags three CS-ENC-02 findings", async () => {
+	it("CS-ENC-EDGE-35 triple reuse of same GCM nonce flags three CS-ENC-01 hardcoded IV findings", async () => {
 		const result = await scanSource(
 			"triple-reuse.ts",
 			[
@@ -533,7 +533,7 @@ describe("CS-ENC-02 extended edge cases", () => {
 		);
 
 		expect(filterByRule(result.findings, "CS-ENC-02")).toHaveLength(0);
-		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(0);
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(3);
 	});
 });
 
@@ -770,7 +770,7 @@ describe("CS-v1.2 cross-rule edge cases", () => {
 		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
 	});
 
-	it("CS-ENC-EDGE-51 all twelve rules active does not false-positive on secure cipher snippet", async () => {
+	it("CS-ENC-EDGE-51 all nineteen rules active does not false-positive on secure cipher snippet", async () => {
 		const result = await scanSource(
 			"fully-secure.ts",
 			[
@@ -786,5 +786,169 @@ describe("CS-v1.2 cross-rule edge cases", () => {
 		);
 
 		expect(result.findings).toEqual([]);
+	});
+});
+
+describe("CS-ENC-03/04 v1.3 edge cases", () => {
+	it("CS-ENC-EDGE-52 rc4 createCipheriv flags ENC-03 only not DEC-01", async () => {
+		const result = await scanSource(
+			"rc4.ts",
+			[
+				'import { createCipheriv } from "crypto";',
+				"export function enc(k: Buffer, iv: Buffer) {",
+				'  return createCipheriv("rc4", k, iv);',
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-ENC-03")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-DEC-01")).toHaveLength(0);
+	});
+
+	it("CS-ENC-EDGE-53 aes-128-ecb flags ENC-04 not ENC-03", async () => {
+		const result = await scanSource(
+			"ecb-only.ts",
+			[
+				'import { createCipheriv } from "crypto";',
+				"export function enc(k: Buffer, iv: Buffer) {",
+				'  return createCipheriv("aes-128-ecb", k, iv);',
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-ENC-04")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-03")).toHaveLength(0);
+	});
+
+	it("CS-ENC-EDGE-54 des-ecb hardcoded key flags ENC-01 ENC-03 ENC-04", async () => {
+		const result = await scanSource(
+			"triple.ts",
+			[
+				'import { createCipheriv } from "crypto";',
+				"export function enc() {",
+				'  return createCipheriv("des-ecb", "hardcoded-key-16b", Buffer.alloc(0));',
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-03")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-04")).toHaveLength(1);
+	});
+
+	it("CS-ENC-EDGE-55 const-bound key in gcm flags ENC-01 via resolution", async () => {
+		const result = await scanSource(
+			"const-gcm.ts",
+			[
+				'import { createCipheriv, randomBytes } from "crypto";',
+				"export function enc(d: Buffer) {",
+				"  const key = 'hardcoded-key-16bytes!';",
+				"  return createCipheriv('aes-256-gcm', key, randomBytes(12));",
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-02")).toHaveLength(0);
+	});
+
+	it("CS-ENC-EDGE-56 scrypt low cost in same file as cipher does not cross-flag", async () => {
+		const result = await scanSource(
+			"mixed.ts",
+			[
+				'import { createCipheriv, randomBytes, scryptSync } from "crypto";',
+				"export function enc(k: Buffer) {",
+				"  return createCipheriv('aes-256-gcm', k, randomBytes(12));",
+				"}",
+				"export function hashPassword(p: string, s: Buffer) {",
+				"  return scryptSync(p, s, 64, { cost: 4096 });",
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-HASH-04")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(0);
+	});
+});
+
+describe("CS-ENC-03/04 v1.3 edge cases", () => {
+	it("CS-ENC-EDGE-52 rc4 createCipheriv flags ENC-03 only not DEC-01", async () => {
+		const result = await scanSource(
+			"rc4.ts",
+			[
+				'import { createCipheriv } from "crypto";',
+				"export function enc(k: Buffer, iv: Buffer) {",
+				'  return createCipheriv("rc4", k, iv);',
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-ENC-03")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-DEC-01")).toHaveLength(0);
+	});
+
+	it("CS-ENC-EDGE-53 aes-128-ecb flags ENC-04 not ENC-03", async () => {
+		const result = await scanSource(
+			"ecb-only.ts",
+			[
+				'import { createCipheriv } from "crypto";',
+				"export function enc(k: Buffer, iv: Buffer) {",
+				'  return createCipheriv("aes-128-ecb", k, iv);',
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-ENC-04")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-03")).toHaveLength(0);
+	});
+
+	it("CS-ENC-EDGE-54 des-ecb hardcoded key flags ENC-01 ENC-03 ENC-04", async () => {
+		const result = await scanSource(
+			"triple.ts",
+			[
+				'import { createCipheriv } from "crypto";',
+				"export function enc() {",
+				'  return createCipheriv("des-ecb", "hardcoded-key-16b", Buffer.alloc(0));',
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-03")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-04")).toHaveLength(1);
+	});
+
+	it("CS-ENC-EDGE-55 const-bound key in gcm flags ENC-01 via resolution", async () => {
+		const result = await scanSource(
+			"const-gcm.ts",
+			[
+				'import { createCipheriv, randomBytes } from "crypto";',
+				"export function enc(d: Buffer) {",
+				"  const key = 'hardcoded-key-16bytes!';",
+				"  return createCipheriv('aes-256-gcm', key, randomBytes(12));",
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-02")).toHaveLength(0);
+	});
+
+	it("CS-ENC-EDGE-56 scrypt low cost in same file as cipher does not cross-flag", async () => {
+		const result = await scanSource(
+			"mixed.ts",
+			[
+				'import { createCipheriv, randomBytes, scryptSync } from "crypto";',
+				"export function enc(k: Buffer) {",
+				"  return createCipheriv('aes-256-gcm', k, randomBytes(12));",
+				"}",
+				"export function hashPassword(p: string, s: Buffer) {",
+				"  return scryptSync(p, s, 64, { cost: 4096 });",
+				"}",
+			].join("\n"),
+		);
+
+		expect(filterByRule(result.findings, "CS-HASH-04")).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(0);
 	});
 });

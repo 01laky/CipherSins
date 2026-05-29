@@ -6,28 +6,41 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
 	allRules,
+	ARGON2_MIN_MEMORY_COST,
+	ARGON2_MIN_TIME_COST,
 	createEmptySummary,
 	createRuleContext,
 	csCmp01Rule,
 	csDec01Rule,
 	csEnc01Rule,
 	csEnc02Rule,
+	csEnc03Rule,
+	csEnc04Rule,
 	csHash01Rule,
 	csHash02Rule,
 	csHash03Rule,
+	csHash04Rule,
+	csHash05Rule,
 	csJwt01Rule,
 	csJwt02Rule,
 	csJwt03Rule,
 	csJwt04Rule,
+	csJwt05Rule,
+	csJwt06Rule,
 	csRng01Rule,
+	csRng02Rule,
 	formatRelativePath,
 	getLineSnippet,
 	parseSourceFile,
 	PBKDF2_MIN_ITERATIONS,
+	RNG_MIN_AUTH_BYTES,
 	resolveDefaultScanRoot,
 	resolveFiles,
 	runRules,
 	scan,
+	SCRYPT_MIN_BLOCK_SIZE,
+	SCRYPT_MIN_COST,
+	SCRYPT_MIN_PARALLELIZATION,
 	SEVERITIES,
 	summarizeFindings,
 	type Rule,
@@ -55,54 +68,63 @@ describe("CS-S01 exports", () => {
 		expect(typeof csJwt02Rule.run).toBe("function");
 		expect(typeof csJwt03Rule.run).toBe("function");
 		expect(typeof csJwt04Rule.run).toBe("function");
+		expect(typeof csJwt05Rule.run).toBe("function");
+		expect(typeof csJwt06Rule.run).toBe("function");
 		expect(typeof csCmp01Rule.run).toBe("function");
 		expect(typeof csRng01Rule.run).toBe("function");
+		expect(typeof csRng02Rule.run).toBe("function");
 		expect(typeof csHash01Rule.run).toBe("function");
 		expect(typeof csHash02Rule.run).toBe("function");
 		expect(typeof csHash03Rule.run).toBe("function");
+		expect(typeof csHash04Rule.run).toBe("function");
+		expect(typeof csHash05Rule.run).toBe("function");
 		expect(typeof csEnc01Rule.run).toBe("function");
 		expect(typeof csEnc02Rule.run).toBe("function");
+		expect(typeof csEnc03Rule.run).toBe("function");
+		expect(typeof csEnc04Rule.run).toBe("function");
 		expect(typeof csDec01Rule.run).toBe("function");
 		expect(PBKDF2_MIN_ITERATIONS).toBe(100_000);
+		expect(SCRYPT_MIN_COST).toBe(16_384);
+		expect(SCRYPT_MIN_BLOCK_SIZE).toBe(8);
+		expect(SCRYPT_MIN_PARALLELIZATION).toBe(1);
+		expect(ARGON2_MIN_TIME_COST).toBe(3);
+		expect(ARGON2_MIN_MEMORY_COST).toBe(65_536);
+		expect(RNG_MIN_AUTH_BYTES).toBe(16);
 	});
 });
 
+const ALL_RULE_IDS = [
+	"CS-JWT-01",
+	"CS-JWT-02",
+	"CS-JWT-03",
+	"CS-JWT-04",
+	"CS-JWT-05",
+	"CS-JWT-06",
+	"CS-CMP-01",
+	"CS-RNG-01",
+	"CS-RNG-02",
+	"CS-HASH-01",
+	"CS-HASH-02",
+	"CS-HASH-03",
+	"CS-HASH-04",
+	"CS-HASH-05",
+	"CS-ENC-01",
+	"CS-ENC-02",
+	"CS-ENC-03",
+	"CS-ENC-04",
+	"CS-DEC-01",
+];
+
 describe("CS-S02 rule registry", () => {
-	it("CS-S02 registers all twelve MVP rules in stable order", () => {
-		expect(allRules).toHaveLength(12);
-		expect(allRules.map((r) => r.id)).toEqual([
-			"CS-JWT-01",
-			"CS-JWT-02",
-			"CS-JWT-03",
-			"CS-JWT-04",
-			"CS-CMP-01",
-			"CS-RNG-01",
-			"CS-HASH-01",
-			"CS-HASH-02",
-			"CS-HASH-03",
-			"CS-ENC-01",
-			"CS-ENC-02",
-			"CS-DEC-01",
-		]);
+	it("CS-S02 registers all nineteen rules in stable order", () => {
+		expect(allRules).toHaveLength(19);
+		expect(allRules.map((r) => r.id)).toEqual(ALL_RULE_IDS);
 	});
 });
 
 describe("CS-S49 rule registry order", () => {
 	it("CS-S49 keeps stable allRules order", () => {
-		expect(allRules.map((rule) => rule.id)).toEqual([
-			"CS-JWT-01",
-			"CS-JWT-02",
-			"CS-JWT-03",
-			"CS-JWT-04",
-			"CS-CMP-01",
-			"CS-RNG-01",
-			"CS-HASH-01",
-			"CS-HASH-02",
-			"CS-HASH-03",
-			"CS-ENC-01",
-			"CS-ENC-02",
-			"CS-DEC-01",
-		]);
+		expect(allRules.map((rule) => rule.id)).toEqual(ALL_RULE_IDS);
 	});
 });
 

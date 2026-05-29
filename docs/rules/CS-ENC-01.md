@@ -57,6 +57,30 @@ export function decrypt(data: Buffer, key: Buffer, iv: Buffer) {
 - **Either key or IV hardcoded** triggers one finding on the call expression.
 - **Same-file scope only (v1).**
 
+## Same-file const/let key/IV resolution (v1.3)
+
+v1.3 resolves key and IV arguments through same-file **`const`** / **`let`** bindings when the initializer is hardcoded material:
+
+```typescript
+import { createCipheriv, randomBytes } from "crypto";
+
+export function encrypt(data: Buffer) {
+	const key = "hardcoded-key-16bytes!";
+	const iv = randomBytes(12);
+	return createCipheriv("aes-256-gcm", key, iv, { authTagLength: 16 });
+}
+```
+
+The call above is flagged because `key` resolves to a string literal via **`expressionResolvesToHardcodedSecretMaterial`** in **`cipher-literals`**. Runtime-only bindings (`process.env`, function parameters, imports) still do not match.
+
+| Scenario                                                    | v1.2 behavior          | v1.3 behavior          |
+| ----------------------------------------------------------- | ---------------------- | ---------------------- |
+| `const key = "literal"; createCipheriv(..., key, iv)`       | **Not flagged**        | **Flagged**            |
+| `const key = process.env.KEY; createCipheriv(..., key, iv)` | **Not flagged**        | **Not flagged**        |
+| `const iv = randomBytes(12); createCipheriv(..., key, iv)`  | **Not flagged** for IV | **Not flagged** for IV |
+
+Cross-file constants and non-literal initializers remain out of scope.
+
 ## False positives and limits
 
 | Scenario                                                | Behavior                                                                              |
@@ -89,7 +113,7 @@ See [cli.md](../cli.md#inline-suppressions).
 
 ## Limitations
 
-See [False positives and limits](#false-positives-and-limits). Non-literal keys/IVs (variables without static initializer) are not detected. Third-party cipher wrappers are not tracked in v1.2.
+See [False positives and limits](#false-positives-and-limits) and [Same-file const/let key/IV resolution (v1.3)](#same-file-constlet-keyiv-resolution-v13). Non-literal keys/IVs without a same-file literal initializer are not detected. Third-party cipher wrappers are not tracked in v1.3.
 
 ## Source
 

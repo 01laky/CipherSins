@@ -23,6 +23,13 @@ import {
 	cliEntry,
 	cmpBadDir,
 	hash02BadDir,
+	hash04BadDir,
+	hash05BadDir,
+	enc03BadDir,
+	enc04BadDir,
+	jwt05BadDir,
+	jwt06BadDir,
+	rng02BadDir,
 	jwt01BadDir,
 	jwt02BadDir,
 	jwt03BadDir,
@@ -32,6 +39,7 @@ import {
 	jwt04BadDir,
 	pkgVersion,
 	rootDir,
+	cmpGoodDir,
 } from "./helpers.js";
 
 function withTempDir(prefix: string, run: (dir: string) => void) {
@@ -402,7 +410,7 @@ describe("CS-CLI extended edge cases — JSON output contract", () => {
 			"--format",
 			"json",
 			"--no-config",
-			jwt03GoodDir,
+			cmpGoodDir,
 			"totally-missing-path-xyz",
 		]);
 		const doc = JSON.parse(result.stdout);
@@ -424,7 +432,7 @@ describe("CS-CLI extended edge cases — JSON output contract", () => {
 			doc.summary.high +
 			doc.summary.critical;
 		expect(doc.summary.total).toBe(sum);
-		expect(doc.summary.total).toBe(225);
+		expect(doc.summary.total).toBe(271);
 	});
 
 	it("CS-CLI-EXT-39 JSON version field matches package version", () => {
@@ -742,5 +750,84 @@ describe("CS-CLI extended edge cases — sortFindings unit parity", () => {
 		const copy = [...findings];
 		sortFindings(findings);
 		expect(findings).toEqual(copy);
+	});
+});
+
+describe("CS-CLI v1.3 config filter edge cases", () => {
+	it("CS-CLI-FILT-V13-01 --only CS-HASH-04,CS-HASH-05 limits findings to hash rules", () => {
+		const result = cli([
+			"--format",
+			"json",
+			"--no-config",
+			"--only",
+			"CS-HASH-04,CS-HASH-05",
+			hash04BadDir,
+			hash05BadDir,
+		]);
+		expect(result.status).toBe(0);
+		const doc = JSON.parse(result.stdout);
+		expect(
+			doc.findings.every(
+				(f: { ruleId: string }) =>
+					f.ruleId === "CS-HASH-04" || f.ruleId === "CS-HASH-05",
+			),
+		).toBe(true);
+		expect(doc.findings.length).toBeGreaterThan(0);
+	});
+
+	it("CS-CLI-FILT-V13-02 --only CS-JWT-05,CS-JWT-06,CS-ENC-03,CS-ENC-04 on bad dirs", () => {
+		const result = cli([
+			"--format",
+			"json",
+			"--no-config",
+			"--only",
+			"CS-JWT-05,CS-JWT-06,CS-ENC-03,CS-ENC-04",
+			jwt05BadDir,
+			jwt06BadDir,
+			enc03BadDir,
+			enc04BadDir,
+		]);
+		expect(result.status).toBe(0);
+		const doc = JSON.parse(result.stdout);
+		const ruleIds = new Set(
+			doc.findings.map((f: { ruleId: string }) => f.ruleId),
+		);
+		expect(ruleIds.has("CS-JWT-05") || ruleIds.has("CS-JWT-06")).toBe(true);
+		expect(ruleIds.has("CS-ENC-03") || ruleIds.has("CS-ENC-04")).toBe(true);
+		expect(ruleIds.has("CS-HASH-01")).toBe(false);
+	});
+
+	it("CS-CLI-FILT-V13-03 --ignore CS-RNG-02 on full allBadDirs excludes RNG-02", () => {
+		const result = cli([
+			"--format",
+			"json",
+			"--no-config",
+			"--ignore",
+			"CS-RNG-02",
+			...allBadDirs,
+		]);
+		expect(result.status).toBe(0);
+		const doc = JSON.parse(result.stdout);
+		expect(
+			doc.findings.some((f: { ruleId: string }) => f.ruleId === "CS-RNG-02"),
+		).toBe(false);
+		expect(doc.summary.total).toBe(271 - 4);
+	}, 30_000);
+
+	it("CS-CLI-FILT-V13-04 --only CS-RNG-02 on rng-02 bad yields four findings", () => {
+		const result = cli([
+			"--format",
+			"json",
+			"--no-config",
+			"--only",
+			"CS-RNG-02",
+			rng02BadDir,
+		]);
+		expect(result.status).toBe(0);
+		const doc = JSON.parse(result.stdout);
+		expect(doc.findings).toHaveLength(4);
+		expect(
+			doc.findings.every((f: { ruleId: string }) => f.ruleId === "CS-RNG-02"),
+		).toBe(true);
 	});
 });

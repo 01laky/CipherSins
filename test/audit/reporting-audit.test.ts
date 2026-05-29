@@ -168,13 +168,32 @@ describe("CS-REP-EXT audit reporting", () => {
 		}
 	});
 
-	it("CS-REP-EXT-30 all 12 rule ids appear in SARIF driver rules in allRules order", async () => {
+	it("CS-REP-EXT-30 all 19 rule ids appear in SARIF driver rules in allRules order", async () => {
 		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
 		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const ids = JSON.parse(sarif).runs[0].tool.driver.rules.map(
 			(rule: { id: string }) => rule.id,
 		);
 		expect(ids).toEqual(allRules.map((rule) => rule.id));
+		expect(ids).toHaveLength(19);
+	});
+
+	it("CS-REP-V13-01 SARIF driver rule CS-ENC-03 includes external/cwe/cwe-327", async () => {
+		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
+		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
+		const enc03 = JSON.parse(sarif).runs[0].tool.driver.rules.find(
+			(rule: { id: string }) => rule.id === "CS-ENC-03",
+		);
+		expect(enc03.properties.tags).toContain("external/cwe/cwe-327");
+	});
+
+	it("CS-REP-V13-02 SARIF driver rule CS-JWT-05 includes external/cwe/cwe-613", async () => {
+		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
+		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
+		const jwt05 = JSON.parse(sarif).runs[0].tool.driver.rules.find(
+			(rule: { id: string }) => rule.id === "CS-JWT-05",
+		);
+		expect(jwt05.properties.tags).toContain("external/cwe/cwe-613");
 	});
 
 	it("CS-REP-EXT-31 partialFingerprints stable across separate formatSarif calls", async () => {

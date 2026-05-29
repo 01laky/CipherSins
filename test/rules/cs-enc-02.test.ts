@@ -43,7 +43,7 @@ describe("CS-ENC-02 rule registry", () => {
 	});
 
 	it("CS-ENC-02-03 csEnc02Rule is registered at index 10 after CS-ENC-01", () => {
-		expect(allRules[10]).toBe(csEnc02Rule);
+		expect(allRules[15]).toBe(csEnc02Rule);
 		expect(allRules.find((rule) => rule.id === "CS-ENC-02")).toBe(csEnc02Rule);
 	});
 });

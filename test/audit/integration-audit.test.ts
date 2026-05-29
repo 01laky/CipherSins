@@ -22,7 +22,7 @@ function withTempDir(
 }
 
 describe("CS-INT integration audit", () => {
-	it("CS-INT-41 combined bad directories trigger all twelve MVP rule ids", async () => {
+	it("CS-INT-41 combined bad directories trigger all nineteen rule ids", async () => {
 		const result = await scan({ paths: allBadDirs, cwd: rootDir });
 		const ruleIds = [
 			...new Set(result.findings.map((finding) => finding.ruleId)),
@@ -32,14 +32,21 @@ describe("CS-INT integration audit", () => {
 			"CS-DEC-01",
 			"CS-ENC-01",
 			"CS-ENC-02",
+			"CS-ENC-03",
+			"CS-ENC-04",
 			"CS-HASH-01",
 			"CS-HASH-02",
 			"CS-HASH-03",
+			"CS-HASH-04",
+			"CS-HASH-05",
 			"CS-JWT-01",
 			"CS-JWT-02",
 			"CS-JWT-03",
 			"CS-JWT-04",
+			"CS-JWT-05",
+			"CS-JWT-06",
 			"CS-RNG-01",
+			"CS-RNG-02",
 		]);
 		expect(result.findings.some((f) => f.severity === "critical")).toBe(true);
 	});

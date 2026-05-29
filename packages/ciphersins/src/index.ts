@@ -68,13 +68,30 @@ export {
 	csJwt02Rule,
 	csJwt03Rule,
 	csJwt04Rule,
+	csJwt05Rule,
+	csJwt06Rule,
 	csCmp01Rule,
 	csRng01Rule,
+	csRng02Rule,
 	csHash01Rule,
 	csHash02Rule,
 	csHash03Rule,
+	csHash04Rule,
+	csHash05Rule,
 	csEnc01Rule,
 	csEnc02Rule,
+	csEnc03Rule,
+	csEnc04Rule,
 	csDec01Rule,
 } from "./rules/index.js";
 export { PBKDF2_MIN_ITERATIONS } from "./rules/helpers/pbkdf2-iterations.js";
+export {
+	SCRYPT_MIN_COST,
+	SCRYPT_MIN_BLOCK_SIZE,
+	SCRYPT_MIN_PARALLELIZATION,
+} from "./rules/helpers/scrypt-cost.js";
+export {
+	ARGON2_MIN_TIME_COST,
+	ARGON2_MIN_MEMORY_COST,
+} from "./rules/helpers/argon2-params.js";
+export { RNG_MIN_AUTH_BYTES } from "./rules/helpers/random-bytes-length.js";

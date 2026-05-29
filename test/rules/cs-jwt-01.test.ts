@@ -73,8 +73,8 @@ describe("CS-JWT-01 directory scans", () => {
 	it("CS-JWT-01-02 flags bad fixtures with high severity", async () => {
 		const result = await scan({ paths: [jwtBadDir], cwd: rootDir });
 
-		expect(result.findings).toHaveLength(18);
-		expect(result.scannedFiles).toHaveLength(16);
+		expect(result.findings).toHaveLength(19);
+		expect(result.scannedFiles).toHaveLength(17);
 		expect(result.findings.every((f) => f.ruleId === "CS-JWT-01")).toBe(true);
 		expect(result.findings.every((f) => f.severity === "high")).toBe(true);
 		expect(result.findings.every((f) => f.message === CS_JWT_01_MESSAGE)).toBe(
@@ -515,15 +515,15 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const jwtFindings = result.findings.filter((f) => f.ruleId === "CS-JWT-01");
 
 		expect(result.summary.high).toBe(jwtFindings.length);
-		expect(result.summary.high).toBe(18);
+		expect(result.summary.high).toBe(19);
 		expect(result.summary.medium).toBe(0);
 	});
 
-	it("CS-JWT-01-45 good directory scans exactly 15 files with zero findings", async () => {
+	it("CS-JWT-01-45 good directory scans exactly 16 files with zero findings", async () => {
 		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(15);
+		expect(result.scannedFiles).toHaveLength(16);
 	});
 
 	it("CS-JWT-01-46 bad directory finding signatures are unique", async () => {
@@ -531,7 +531,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const signatures = result.findings.map(findingSignature);
 
 		expect(new Set(signatures).size).toBe(signatures.length);
-		expect(signatures).toHaveLength(18);
+		expect(signatures).toHaveLength(19);
 	});
 
 	it("CS-JWT-01-47 CLI bad scan output matches default-import-decode-only.ts line format", () => {
@@ -577,11 +577,60 @@ describe("CS-JWT-01 extended edge cases", () => {
 		expect(finding!.snippet).toMatch(/jwt\?\.decode|decode/i);
 	});
 
-	it("CS-JWT-01-51 entire jwt-01 good directory stays clean with twelve rules", async () => {
+	it("CS-JWT-01-51 entire jwt-01 good directory stays clean with nineteen rules", async () => {
 		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(15);
+		expect(result.scannedFiles).toHaveLength(16);
+	});
+});
+
+describe("CS-JWT-01 re-export verify enhancement", () => {
+	it("CS-JWT-01-90 decode-with-reexport-verify.ts stays clean for JWT-01", async () => {
+		const result = await scan({
+			paths: [fixturePath("good", "decode-with-reexport-verify.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toEqual([]);
+	});
+
+	it("CS-JWT-01-91 decode-reexport-no-verify-call.ts yields exactly one finding", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "decode-reexport-no-verify-call.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-JWT-01");
+	});
+
+	it("CS-JWT-01-92 decode-with-reexport-verify has verify in same file scope", async () => {
+		const file = fixturePath("good", "decode-with-reexport-verify.ts");
+		const findings = csJwt01Rule.run(createRuleContext(file));
+
+		expect(findings).toEqual([]);
+	});
+
+	it("CS-JWT-01-93 decode-reexport-no-verify-call isolated rule run matches scan", async () => {
+		const file = fixturePath("bad", "decode-reexport-no-verify-call.ts");
+		const scanResult = await scan({ paths: [file], cwd: rootDir });
+		const findings = csJwt01Rule.run(createRuleContext(file));
+
+		expect(findings).toHaveLength(1);
+		expect(findings[0]?.line).toBe(scanResult.findings[0]?.line);
+	});
+
+	it("CS-JWT-01-94 good directory file count includes re-export verify fixture", async () => {
+		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
+
+		expect(result.scannedFiles).toHaveLength(16);
+	});
+
+	it("CS-JWT-01-95 bad directory finding count is nineteen with re-export bad fixture", async () => {
+		const result = await scan({ paths: [jwtBadDir], cwd: rootDir });
+
+		expect(result.findings).toHaveLength(19);
 	});
 });
 

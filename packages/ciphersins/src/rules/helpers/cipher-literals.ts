@@ -103,6 +103,52 @@ export function literalMaterialKey(expr: ts.Expression): string | undefined {
 	return undefined;
 }
 
+function findLiteralInitializer(
+	sourceFile: ts.SourceFile,
+	name: string,
+): ts.Expression | undefined {
+	let found: ts.Expression | undefined;
+
+	function visit(node: ts.Node): void {
+		if (found) {
+			return;
+		}
+		if (ts.isVariableStatement(node)) {
+			for (const decl of node.declarationList.declarations) {
+				if (!ts.isIdentifier(decl.name) || decl.name.text !== name) {
+					continue;
+				}
+				if (decl.initializer) {
+					found = decl.initializer;
+					return;
+				}
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+
+	visit(sourceFile);
+	return found;
+}
+
+export function expressionResolvesToHardcodedSecretMaterial(
+	expr: ts.Expression | undefined,
+	sourceFile: ts.SourceFile,
+): boolean {
+	if (expressionIsHardcodedSecretMaterial(expr)) {
+		return true;
+	}
+
+	if (expr && ts.isIdentifier(expr)) {
+		const resolved = findLiteralInitializer(sourceFile, expr.text);
+		if (resolved && expressionIsHardcodedSecretMaterial(resolved)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 export function isAesGcmAlgorithmLiteral(
 	expr: ts.Expression | undefined,
 ): boolean {

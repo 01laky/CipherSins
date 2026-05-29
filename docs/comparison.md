@@ -38,12 +38,12 @@ CipherSins also flags **MD5/SHA1 password hashing** (`createHash`, weak-digest `
 
 General SAST tools can encode similar rules, but CipherSins is **purpose-built** for a curated MVP rule set:
 
-- Consistent rule IDs (`CS-JWT-01` … `CS-HASH-03`)
+- Consistent rule IDs (`CS-JWT-01` … `CS-RNG-02`)
 - Bad/good fixtures per rule
-- Numbered vitest cases per rule (**1429** tests at v1.2.0)
+- Numbered vitest cases per rule (**1722** tests at v1.3.0)
 - Linked rule documentation with fix guidance
 
-**Implemented at v1.2.0 (12 rules + full CLI):**
+**Implemented at v1.3.0 (19 rules + full CLI):**
 
 | Rule       | Severity | What it catches                                              |
 | ---------- | -------- | ------------------------------------------------------------ |
@@ -51,14 +51,21 @@ General SAST tools can encode similar rules, but CipherSins is **purpose-built**
 | CS-JWT-02  | high     | JWT verify without explicit `algorithms`                     |
 | CS-JWT-03  | critical | JWT `none` algorithm on verify or sign                       |
 | CS-JWT-04  | medium   | JWT verify with `ignoreExpiration: true`                     |
+| CS-JWT-05  | medium   | JWT sign without `expiresIn` or payload `exp`                |
+| CS-JWT-06  | medium   | JWT sign with `noTimestamp: true` and no expiry              |
 | CS-CMP-01  | high     | Timing-unsafe `===`/`==`/`!==`/`!=` on auth material         |
 | CS-RNG-01  | high     | `Math.random()` in auth-named context                        |
+| CS-RNG-02  | high     | `randomBytes(n)` with n < 16 in auth context                 |
 | CS-HASH-01 | high     | MD5/SHA1 password hashing                                    |
 | CS-HASH-02 | medium   | Weak bcrypt cost (< 10) in password context                  |
+| CS-HASH-03 | medium   | PBKDF2 iteration count below 100,000 in password context     |
+| CS-HASH-04 | medium   | scrypt cost/blockSize/parallelization below minimum          |
+| CS-HASH-05 | medium   | argon2 timeCost/memoryCost below minimum                     |
 | CS-ENC-01  | medium   | Hardcoded key or IV on `createCipheriv` / `createDecipheriv` |
 | CS-ENC-02  | high     | AES-GCM static or reused IV/nonce                            |
+| CS-ENC-03  | high     | Weak cipher (DES, RC4, Blowfish, CAST) on cipheriv calls     |
+| CS-ENC-04  | high     | ECB mode cipher (`*-ecb` algorithm literal)                  |
 | CS-DEC-01  | medium   | Deprecated `createCipher` / `createDecipher`                 |
-| CS-HASH-03 | medium   | PBKDF2 iteration count below 100,000 in password context     |
 
 CipherSins flags **`jwt.verify()` without explicit `algorithms`**, **`none` algorithm bypass**, and **`ignoreExpiration: true`** — ESLint security plugins and generic SAST tools rarely enforce these jsonwebtoken call-site constraints together.
 

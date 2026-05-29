@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -22,13 +23,20 @@ const ALL_RULE_IDS = [
 	"CS-JWT-02",
 	"CS-JWT-03",
 	"CS-JWT-04",
+	"CS-JWT-05",
+	"CS-JWT-06",
 	"CS-CMP-01",
 	"CS-RNG-01",
+	"CS-RNG-02",
 	"CS-HASH-01",
 	"CS-HASH-02",
 	"CS-HASH-03",
+	"CS-HASH-04",
+	"CS-HASH-05",
 	"CS-ENC-01",
 	"CS-ENC-02",
+	"CS-ENC-03",
+	"CS-ENC-04",
 	"CS-DEC-01",
 ];
 
@@ -63,11 +71,11 @@ describe("CS-ENC-01 rule registry", () => {
 		expect(csEnc01Rule.severity).toBe("medium");
 	});
 
-	it("CS-ENC-01-03 csEnc01Rule is registered at index 9 after CS-HASH-03", () => {
+	it("CS-ENC-01-03 csEnc01Rule is registered at index 14 after CS-HASH-05", () => {
 		const fromRegistry = allRules.find((rule) => rule.id === "CS-ENC-01");
 		expect(fromRegistry).toBeDefined();
 		expect(fromRegistry).toBe(csEnc01Rule);
-		expect(allRules[9]).toBe(csEnc01Rule);
+		expect(allRules[14]).toBe(csEnc01Rule);
 		expect(allRules.map((rule) => rule.id)).toEqual(ALL_RULE_IDS);
 	});
 });
@@ -77,7 +85,7 @@ describe("CS-ENC-01 directory scans", () => {
 		const result = await scan({ paths: [enc01BadDir], cwd: rootDir });
 		const encFindings = filterByRule(result.findings, "CS-ENC-01");
 
-		expect(encFindings).toHaveLength(7);
+		expect(encFindings).toHaveLength(8);
 		expect(result.scannedFiles).toHaveLength(8);
 		expect(encFindings.every((f) => f.severity === "medium")).toBe(true);
 		expect(encFindings.every((f) => f.message === CS_ENC_01_MESSAGE)).toBe(
@@ -156,12 +164,13 @@ describe("CS-ENC-01 per-file bad fixtures", () => {
 		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
 	});
 
-	it("CS-ENC-01-13 gcm-hardcoded-key-with-options.ts is scanned without CS-ENC-02 overlap", async () => {
+	it("CS-ENC-01-13 gcm-hardcoded-key-with-options.ts flags CS-ENC-01 without CS-ENC-02 overlap", async () => {
 		const result = await scan({
 			paths: [fixturePath("bad", "gcm-hardcoded-key-with-options.ts")],
 			cwd: rootDir,
 		});
 
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
 		expect(filterByRule(result.findings, "CS-ENC-02")).toHaveLength(0);
 		expect(result.scannedFiles).toHaveLength(1);
 	});
@@ -247,7 +256,150 @@ describe("CS-ENC-01 finding shape", () => {
 		const encFindings = filterByRule(result.findings, "CS-ENC-01");
 
 		expect(result.summary.medium).toBe(encFindings.length);
-		expect(result.summary.medium).toBe(7);
+		expect(result.summary.medium).toBe(8);
+	});
+});
+
+describe("CS-ENC-01 const key resolution enhancement", () => {
+	it("CS-ENC-01-26 gcm-hardcoded-key-with-options.ts yields exactly one ENC-01 finding", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "gcm-hardcoded-key-with-options.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+	});
+
+	it("CS-ENC-01-27 let-bound key with random IV flags CS-ENC-01", async () => {
+		const tempDir = fs.mkdtempSync(
+			path.join(os.tmpdir(), "ciphersins-enc01-let-"),
+		);
+		const file = path.join(tempDir, "let-key.ts");
+		fs.writeFileSync(
+			file,
+			[
+				'import { createCipheriv, randomBytes } from "crypto";',
+				"export function enc(data: Buffer) {",
+				"  let key = 'hardcoded-key-16b';",
+				"  return createCipheriv('aes-256-gcm', key, randomBytes(12));",
+				"}",
+			].join("\n"),
+		);
+		try {
+			const result = await scan({ paths: [file], cwd: tempDir });
+			expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+		} finally {
+			fs.rmSync(tempDir, { recursive: true, force: true });
+		}
+	});
+
+	it("CS-ENC-01-28 const-bound iv with param key flags CS-ENC-01", async () => {
+		const tempDir = fs.mkdtempSync(
+			path.join(os.tmpdir(), "ciphersins-enc01-const-iv-"),
+		);
+		const file = path.join(tempDir, "const-iv.ts");
+		fs.writeFileSync(
+			file,
+			[
+				'import { createCipheriv } from "crypto";',
+				"export function enc(data: Buffer, key: Buffer) {",
+				"  const iv = 'static-iv-123456';",
+				"  return createCipheriv('aes-256-cbc', key, iv);",
+				"}",
+			].join("\n"),
+		);
+		try {
+			const result = await scan({ paths: [file], cwd: tempDir });
+			expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+		} finally {
+			fs.rmSync(tempDir, { recursive: true, force: true });
+		}
+	});
+
+	it("CS-ENC-01-29 const key from process.env stays clean for CS-ENC-01", async () => {
+		const tempDir = fs.mkdtempSync(
+			path.join(os.tmpdir(), "ciphersins-enc01-env-"),
+		);
+		const file = path.join(tempDir, "env-key.ts");
+		fs.writeFileSync(
+			file,
+			[
+				'import { createCipheriv, randomBytes } from "crypto";',
+				"export function enc(data: Buffer) {",
+				"  const key = process.env.CIPHER_KEY!;",
+				"  return createCipheriv('aes-256-cbc', key, randomBytes(16));",
+				"}",
+			].join("\n"),
+		);
+		try {
+			const result = await scan({ paths: [file], cwd: tempDir });
+			expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(0);
+		} finally {
+			fs.rmSync(tempDir, { recursive: true, force: true });
+		}
+	});
+
+	it("CS-ENC-01-30 let key reassigned before cipheriv still flags CS-ENC-01 on hardcoded init", async () => {
+		const tempDir = fs.mkdtempSync(
+			path.join(os.tmpdir(), "ciphersins-enc01-reassign-"),
+		);
+		const file = path.join(tempDir, "reassign-key.ts");
+		fs.writeFileSync(
+			file,
+			[
+				'import { createCipheriv, randomBytes } from "crypto";',
+				"export function enc(data: Buffer, runtimeKey: Buffer) {",
+				"  let key = 'hardcoded-key-16b';",
+				"  key = runtimeKey;",
+				"  return createCipheriv('aes-256-cbc', key, randomBytes(16));",
+				"}",
+			].join("\n"),
+		);
+		try {
+			const result = await scan({ paths: [file], cwd: tempDir });
+			expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+		} finally {
+			fs.rmSync(tempDir, { recursive: true, force: true });
+		}
+	});
+
+	it("CS-ENC-01-31 const key shorthand in options object flags CS-ENC-01", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "gcm-hardcoded-key-with-options.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings[0]?.message).toBe(CS_ENC_01_MESSAGE);
+	});
+
+	it("CS-ENC-01-32 bad directory ENC-01 count is eight after const resolution", async () => {
+		const result = await scan({ paths: [enc01BadDir], cwd: rootDir });
+
+		expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(8);
+	});
+
+	it("CS-ENC-01-33 const iv and const key yield single CS-ENC-01 finding", async () => {
+		const tempDir = fs.mkdtempSync(
+			path.join(os.tmpdir(), "ciphersins-enc01-both-const-"),
+		);
+		const file = path.join(tempDir, "both-const.ts");
+		fs.writeFileSync(
+			file,
+			[
+				'import { createCipheriv } from "crypto";',
+				"export function enc() {",
+				"  const key = 'hardcoded-key-16b';",
+				"  const iv = 'iv16bytes!!!!!!!';",
+				"  return createCipheriv('aes-256-cbc', key, iv);",
+				"}",
+			].join("\n"),
+		);
+		try {
+			const result = await scan({ paths: [file], cwd: tempDir });
+			expect(filterByRule(result.findings, "CS-ENC-01")).toHaveLength(1);
+		} finally {
+			fs.rmSync(tempDir, { recursive: true, force: true });
+		}
 	});
 });
 

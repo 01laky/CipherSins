@@ -79,7 +79,7 @@ export function objectLiteralHasNonLiteralAlgorithmsProperty(
 	return false;
 }
 
-function isCallbackArgument(expr: ts.Expression): boolean {
+export function isCallbackArgument(expr: ts.Expression): boolean {
 	return ts.isArrowFunction(expr) || ts.isFunctionExpression(expr);
 }
 

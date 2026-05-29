@@ -226,12 +226,13 @@ MVP can be documentation only + link to `crypto.timingSafeEqual`.
 
 ## Roadmap After MVP
 
-| Version | Scope                                                                                       |
-| ------- | ------------------------------------------------------------------------------------------- |
-| v1.0    | 8 rules, pretty + json + sarif, config, **first npm publish**                               |
-| v1.1    | GitHub Action `.github/actions/scan` (**implemented**)                                      |
-| v1.2    | more rules (AES-GCM misuse, createDecipher deprecated, pbkdf2 iterations) (**implemented**) |
-| v2      | `--baseline` (new findings only), HTML report                                               |
+| Version | Scope                                                                                                                                       |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0    | 8 rules, pretty + json + sarif, config, **first npm publish**                                                                               |
+| v1.1    | GitHub Action `.github/actions/scan` (**implemented**)                                                                                      |
+| v1.2    | more rules (AES-GCM misuse, createDecipher deprecated, pbkdf2 iterations) (**implemented**)                                                 |
+| v1.3    | scrypt + argon2 params, weak/ECB ciphers, JWT sign expiry/noTimestamp, RNG-02, ENC-01/JWT-01 enhancements, SARIF CWE tags (**implemented**) |
+| v2      | `--baseline` (new findings only), HTML report                                                                                               |
 
 ---
 

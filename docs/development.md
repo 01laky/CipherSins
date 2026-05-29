@@ -22,7 +22,7 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                                                                                    |
 | `npm run build`                     | Build publishable `ciphersins` package (engine + CLI)                                                                            |
-| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1192** at v1.1.0) |
+| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1722** at v1.3.0) |
 | `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                                                                                     |
 | `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`                                                                                 |
 | `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                                                                                     |
@@ -52,7 +52,7 @@ Config file parsing is **implemented** — see [`ciphersins.config.example.json`
 
 ## Adding a rule
 
-Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02**, **CS-ENC-01**, **CS-ENC-02**, **CS-DEC-01**, **CS-HASH-03** in `packages/ciphersins/src/rules/`. Shared helpers: **`jwt-verify-options`** (JWT-02/03/04), **`auth-material-names`** (CMP/RNG), **`password-context`** (HASH-01/02/03), **`bcrypt-bindings`** / **`bcrypt-cost`** (HASH-02), **`crypto-cipher-bindings`** / **`cipher-literals`** (ENC-01/02, DEC-01), **`pbkdf2-iterations`** (HASH-03).
+Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02**, **CS-ENC-01**, **CS-ENC-02**, **CS-DEC-01**, **CS-HASH-03**, **CS-HASH-04**, **CS-HASH-05**, **CS-ENC-03**, **CS-ENC-04**, **CS-JWT-05**, **CS-JWT-06**, **CS-RNG-02** in `packages/ciphersins/src/rules/`. Shared helpers: **`jwt-verify-options`** (JWT-02/03/04), **`jwt-sign-options`** (JWT-05/06), **`auth-material-names`** (CMP/RNG), **`password-context`** (HASH-01/02/03/04/05), **`bcrypt-bindings`** / **`bcrypt-cost`** (HASH-02), **`crypto-cipher-bindings`** / **`cipher-literals`** (ENC-01/02/03/04, DEC-01, RNG-02), **`pbkdf2-iterations`** (HASH-03), **`scrypt-cost`** (HASH-04), **`argon2-bindings`** / **`argon2-params`** (HASH-05), **`weak-cipher-algorithms`** (ENC-03), **`ecb-cipher-algorithms`** (ENC-04), **`random-bytes-length`** (RNG-02), **`jsonwebtoken-bindings`** / **`jsonwebtoken-verify-scope`** (JWT-01).
 
 1. Create `fixtures/<rule-id>/bad/` and `fixtures/<rule-id>/good/` with minimal samples
 2. Implement `Rule` in `packages/ciphersins/src/rules/` using AST analysis (no regex-only detection)

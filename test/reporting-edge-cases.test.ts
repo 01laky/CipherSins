@@ -16,6 +16,7 @@ import {
 	jwt03BadFile,
 	jwt03GoodDir,
 	jwt04BadDir,
+	cmpGoodDir,
 	rootDir,
 } from "./cli/helpers.js";
 import { skippedPath } from "./helpers/skipped-path.js";
@@ -110,7 +111,7 @@ describe("CS-REP extended edge cases — formatSarif", () => {
 	});
 
 	it("CS-REP-EXT-07 formatSarif zero findings still includes all rule ids in catalog", async () => {
-		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
+		const result = await scan({ paths: [cmpGoodDir], cwd: rootDir });
 		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const doc = JSON.parse(sarif);
 		const catalogIds = doc.runs[0].tool.driver.rules.map(
@@ -251,7 +252,7 @@ describe("CS-REP extended edge cases — fingerprint and normalize", () => {
 	});
 
 	it("CS-REP-EXT-15 normalizeSarifForSnapshot handles empty results array", async () => {
-		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
+		const result = await scan({ paths: [cmpGoodDir], cwd: rootDir });
 		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const normalized = normalizeSarifForSnapshot(sarif) as {
 			runs: Array<{ results: unknown[] }>;

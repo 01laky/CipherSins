@@ -5,14 +5,21 @@ flowchart TB
 		JWT2["CS-JWT-02 · verify algorithms"]
 		JWT3["CS-JWT-03 · none algorithm critical"]
 		JWT4["CS-JWT-04 · ignoreExpiration medium"]
+		JWT5["CS-JWT-05 · sign without expiry"]
+		JWT6["CS-JWT-06 · noTimestamp without expiry"]
 		CMP["CS-CMP-01 · auth === / != + import gate"]
 		RNG["CS-RNG-01 · Math.random auth context"]
+		RNG2["CS-RNG-02 · randomBytes length auth"]
 		HASH["CS-HASH-01 · weak hash + password context"]
 		HASH2["CS-HASH-02 · weak bcrypt cost"]
+		HASH3["CS-HASH-03 · low PBKDF2 iterations"]
+		HASH4["CS-HASH-04 · low scrypt params"]
+		HASH5["CS-HASH-05 · low argon2 params"]
 		ENC1["CS-ENC-01 · hardcoded key/IV"]
 		ENC2["CS-ENC-02 · GCM static/reused IV"]
+		ENC3["CS-ENC-03 · weak cipher algorithm"]
+		ENC4["CS-ENC-04 · ECB mode cipher"]
 		DEC1["CS-DEC-01 · deprecated createCipher"]
-		HASH3["CS-HASH-03 · low PBKDF2 iterations"]
 	end
 
 	subgraph JWT_FLOW["CS-JWT-01"]
@@ -123,6 +130,64 @@ flowchart TB
 		ITER -->|yes| H3FIND["createFinding() · medium"]
 	end
 
+	subgraph HASH4_FLOW["CS-HASH-04"]
+		HBIND4["getHashBindingsForScrypt()"]
+		SCR{"tracked scrypt/scryptSync?"}
+		PWD4{"callHasPasswordContext()?"}
+		WSCRYPT{"weak cost/blockSize/parallelization?"}
+		HBIND4 --> SCR --> PWD4
+		PWD4 -->|yes| WSCRYPT
+		WSCRYPT -->|yes| H4FIND["createFinding() · medium"]
+	end
+
+	subgraph HASH5_FLOW["CS-HASH-05"]
+		ABIND["getArgon2Bindings()"]
+		AHASH{"tracked argon2 hash?"}
+		PWD5{"callHasPasswordContext()?"}
+		WARGON{"timeCost/memoryCost low?"}
+		ABIND --> AHASH --> PWD5
+		PWD5 -->|yes| WARGON
+		WARGON -->|yes| H5FIND["createFinding() · medium"]
+	end
+
+	subgraph ENC3_FLOW["CS-ENC-03"]
+		CBIND4["getCipherBindings()"]
+		WEAK{"weak algorithm literal?"}
+		CBIND4 --> CIV2["createCipheriv/createDecipheriv"] --> WEAK
+		WEAK -->|yes| E3FIND["createFinding() · high"]
+	end
+
+	subgraph ENC4_FLOW["CS-ENC-04"]
+		CBIND5["getCipherBindings()"]
+		ECB{"algorithm ends with -ecb?"}
+		CBIND5 --> CIV3["createCipheriv/createDecipheriv"] --> ECB
+		ECB -->|yes| E4FIND["createFinding() · high"]
+	end
+
+	subgraph JWT5_FLOW["CS-JWT-05"]
+		BIND5["getJsonWebTokenBindings()"]
+		SIGN["tracked jwt.sign()"]
+		EXP{"signCallMissingExpiry()?"}
+		BIND5 --> SIGN --> EXP
+		EXP -->|yes| J5FIND["createFinding() · medium"]
+	end
+
+	subgraph JWT6_FLOW["CS-JWT-06"]
+		BIND6["getJsonWebTokenBindings()"]
+		SIGN2["tracked jwt.sign()"]
+		NTS{"noTimestamp without expiry?"}
+		BIND6 --> SIGN2 --> NTS
+		NTS -->|yes| J6FIND["createFinding() · medium"]
+	end
+
+	subgraph RNG2_FLOW["CS-RNG-02"]
+		RBIND["getCipherBindings()"]
+		SHORT{"randomBytes(n) n < 16?"}
+		AUTH2{"callHasAuthContext()?"}
+		RBIND --> SHORT --> AUTH2
+		AUTH2 -->|yes| R2FIND["createFinding() · high"]
+	end
+
 	subgraph REPORT["Finding output"]
 		direction LR
 		LOC["file · line · column"]
@@ -134,33 +199,47 @@ flowchart TB
 	JWT2 --> JWT2_FLOW
 	JWT3 --> JWT3_FLOW
 	JWT4 --> JWT4_FLOW
+	JWT5 --> JWT5_FLOW
+	JWT6 --> JWT6_FLOW
 	CMP --> CMP_FLOW
 	RNG --> RNG_FLOW
+	RNG2 --> RNG2_FLOW
 	HASH --> HASH_FLOW
 	HASH2 --> HASH2_FLOW
 	ENC1 --> ENC1_FLOW
 	ENC2 --> ENC2_FLOW
+	ENC3 --> ENC3_FLOW
+	ENC4 --> ENC4_FLOW
 	DEC1 --> DEC1_FLOW
 	HASH3 --> HASH3_FLOW
+	HASH4 --> HASH4_FLOW
+	HASH5 --> HASH5_FLOW
 	JFIND --> REPORT
 	J2FIND --> REPORT
 	J3FIND --> REPORT
 	J4FIND --> REPORT
+	J5FIND --> REPORT
+	J6FIND --> REPORT
 	CFIND --> REPORT
 	RFIND --> REPORT
+	R2FIND --> REPORT
 	HFIND --> REPORT
 	H2FIND --> REPORT
 	E1FIND --> REPORT
 	E2FIND --> REPORT
+	E3FIND --> REPORT
+	E4FIND --> REPORT
 	D1FIND --> REPORT
 	H3FIND --> REPORT
+	H4FIND --> REPORT
+	H5FIND --> REPORT
 
 	classDef rule fill:#431407,stroke:#fb923c,stroke-width:2px,color:#ffedd5
 	classDef decision fill:#312e81,stroke:#a5b4fc,stroke-width:2px,color:#eef2ff
 	classDef clean fill:#134e4a,stroke:#5eead4,stroke-width:2px,color:#f0fdfa
 	classDef report fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#dbeafe
 
-	class JWT,JWT2,JWT3,JWT4,CMP,RNG,HASH,HASH2,ENC1,ENC2,DEC1,HASH3 rule
-	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2,VALG,VNONE,VEXP,CIV,HARD,GCM,RAND,REUSE,DEP,PBK,PWD3,ITER decision
+	class JWT,JWT2,JWT3,JWT4,JWT5,JWT6,CMP,RNG,RNG2,HASH,HASH2,HASH3,HASH4,HASH5,ENC1,ENC2,ENC3,ENC4,DEC1 rule
+	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2,VALG,VNONE,VEXP,CIV,HARD,GCM,RAND,REUSE,DEP,PBK,PWD3,ITER,SCR,PWD4,WSCRYPT,AHASH,PWD5,WARGON,WEAK,ECB,EXP,NTS,SHORT,AUTH2,CIV2,CIV3 decision
 	class JCLEAN,CCLEAN,CSKIP clean
 	class LOC,MSG,DOC report

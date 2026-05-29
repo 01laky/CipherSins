@@ -70,23 +70,30 @@ describe("CS-HASH-01 rule registry", () => {
 		expect(csHash01Rule.severity).toBe("high");
 	});
 
-	it("CS-HASH-01-03 csHash01Rule is registered at index 6 after CS-JWT-04", () => {
+	it("CS-HASH-01-03 csHash01Rule is registered at index 9 after CS-RNG-02", () => {
 		const fromRegistry = allRules.find((rule) => rule.id === "CS-HASH-01");
 		expect(fromRegistry).toBeDefined();
 		expect(fromRegistry).toBe(csHash01Rule);
-		expect(allRules[6]).toBe(csHash01Rule);
+		expect(allRules[9]).toBe(csHash01Rule);
 		expect(allRules.map((rule) => rule.id)).toEqual([
 			"CS-JWT-01",
 			"CS-JWT-02",
 			"CS-JWT-03",
 			"CS-JWT-04",
+			"CS-JWT-05",
+			"CS-JWT-06",
 			"CS-CMP-01",
 			"CS-RNG-01",
+			"CS-RNG-02",
 			"CS-HASH-01",
 			"CS-HASH-02",
 			"CS-HASH-03",
+			"CS-HASH-04",
+			"CS-HASH-05",
 			"CS-ENC-01",
 			"CS-ENC-02",
+			"CS-ENC-03",
+			"CS-ENC-04",
 			"CS-DEC-01",
 		]);
 	});

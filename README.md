@@ -1,11 +1,11 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-1.2.0_stable-green)
+![core](https://img.shields.io/badge/core-1.3.0_stable-green)
 ![node](https://img.shields.io/badge/node-%3E%3D20-339933)
-![rules](https://img.shields.io/badge/rules-12%2F12_implemented-9cf)
-![tests](https://img.shields.io/badge/tests-1429_passing-brightgreen)
+![rules](https://img.shields.io/badge/rules-19%2F19_implemented-9cf)
+![tests](https://img.shields.io/badge/tests-1722_passing-brightgreen)
 [![ci](https://github.com/01laky/CipherSins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/CipherSins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-v1.2.0-green)
+![status](https://img.shields.io/badge/status-v1.3.0-green)
 
 **Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
 
@@ -13,7 +13,7 @@
 
 Catch `jwt.decode()` without `jwt.verify()` before it reaches production — **not another regex grep on `node_modules`**.
 
-**Status:** **`1.2.0`** — single npm package (`ciphersins`) with CLI + programmatic API + **GitHub Action** and **12 rules**.
+**Status:** **`1.3.0`** — single npm package (`ciphersins`) with CLI + programmatic API + **GitHub Action** and **19 rules**.
 
 ---
 
@@ -95,20 +95,27 @@ Package layout:
 
 MVP coverage targets the most common **crypto footguns in Node auth and data-protection code**:
 
-| ID                                       | Severity | Title                       | Status      |
-| ---------------------------------------- | -------- | --------------------------- | ----------- |
-| [CS-JWT-01](./docs/rules/CS-JWT-01.md)   | high     | JWT decode without verify   | implemented |
-| [CS-JWT-02](./docs/rules/CS-JWT-02.md)   | high     | Verify without algorithms   | implemented |
-| [CS-JWT-03](./docs/rules/CS-JWT-03.md)   | critical | Algorithm none / bypass     | implemented |
-| [CS-JWT-04](./docs/rules/CS-JWT-04.md)   | medium   | Missing exp validation      | implemented |
-| [CS-CMP-01](./docs/rules/CS-CMP-01.md)   | high     | Timing-unsafe compare       | implemented |
-| [CS-RNG-01](./docs/rules/CS-RNG-01.md)   | high     | Math.random in auth context | implemented |
-| [CS-HASH-01](./docs/rules/CS-HASH-01.md) | high     | MD5/SHA1 for password       | implemented |
-| [CS-HASH-02](./docs/rules/CS-HASH-02.md) | medium   | Weak bcrypt cost            | implemented |
-| [CS-ENC-01](./docs/rules/CS-ENC-01.md)   | medium   | Hardcoded cipher key or IV  | implemented |
-| [CS-ENC-02](./docs/rules/CS-ENC-02.md)   | high     | AES-GCM static or reused IV | implemented |
-| [CS-DEC-01](./docs/rules/CS-DEC-01.md)   | medium   | Deprecated createDecipher   | implemented |
-| [CS-HASH-03](./docs/rules/CS-HASH-03.md) | medium   | PBKDF2 iterations too low   | implemented |
+| ID                                       | Severity | Title                        | Status      |
+| ---------------------------------------- | -------- | ---------------------------- | ----------- |
+| [CS-JWT-01](./docs/rules/CS-JWT-01.md)   | high     | JWT decode without verify    | implemented |
+| [CS-JWT-02](./docs/rules/CS-JWT-02.md)   | high     | Verify without algorithms    | implemented |
+| [CS-JWT-03](./docs/rules/CS-JWT-03.md)   | critical | Algorithm none / bypass      | implemented |
+| [CS-JWT-04](./docs/rules/CS-JWT-04.md)   | medium   | Missing exp validation       | implemented |
+| [CS-JWT-05](./docs/rules/CS-JWT-05.md)   | medium   | JWT sign without expiry      | implemented |
+| [CS-JWT-06](./docs/rules/CS-JWT-06.md)   | medium   | JWT sign with noTimestamp    | implemented |
+| [CS-CMP-01](./docs/rules/CS-CMP-01.md)   | high     | Timing-unsafe compare        | implemented |
+| [CS-RNG-01](./docs/rules/CS-RNG-01.md)   | high     | Math.random in auth context  | implemented |
+| [CS-RNG-02](./docs/rules/CS-RNG-02.md)   | high     | randomBytes length too small | implemented |
+| [CS-HASH-01](./docs/rules/CS-HASH-01.md) | high     | MD5/SHA1 for password        | implemented |
+| [CS-HASH-02](./docs/rules/CS-HASH-02.md) | medium   | Weak bcrypt cost             | implemented |
+| [CS-HASH-03](./docs/rules/CS-HASH-03.md) | medium   | PBKDF2 iterations too low    | implemented |
+| [CS-HASH-04](./docs/rules/CS-HASH-04.md) | medium   | scrypt parameters too low    | implemented |
+| [CS-HASH-05](./docs/rules/CS-HASH-05.md) | medium   | argon2 parameters too low    | implemented |
+| [CS-ENC-01](./docs/rules/CS-ENC-01.md)   | medium   | Hardcoded cipher key or IV   | implemented |
+| [CS-ENC-02](./docs/rules/CS-ENC-02.md)   | high     | AES-GCM static or reused IV  | implemented |
+| [CS-ENC-03](./docs/rules/CS-ENC-03.md)   | high     | Weak cipher algorithm        | implemented |
+| [CS-ENC-04](./docs/rules/CS-ENC-04.md)   | high     | ECB mode cipher              | implemented |
+| [CS-DEC-01](./docs/rules/CS-DEC-01.md)   | medium   | Deprecated createDecipher    | implemented |
 
 Full index: [`docs/rules/README.md`](./docs/rules/README.md).
 
@@ -131,7 +138,7 @@ Library API: `npm install ciphersins`
 ### GitHub Action (CI)
 
 ```yaml
-- uses: 01laky/CipherSins/.github/actions/scan@v1.2.0
+- uses: 01laky/CipherSins/.github/actions/scan@v1.3.0
   with:
     path: ./src
     fail-on: high
@@ -291,7 +298,7 @@ pnpm verify
 | Command                            | Description                                                                                                                              |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke                                                                                  |
-| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/ENC/DEC/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1429** at v1.2.0) |
+| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/ENC/DEC/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1722** at v1.3.0) |
 | `pnpm exec ciphersins scan [path]` | Run linked CLI                                                                                                                           |
 | `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                                                                                                    |
 | `pnpm format:fix`                  | Apply Prettier (tabs)                                                                                                                    |

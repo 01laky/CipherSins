@@ -7,6 +7,7 @@ import {
 	allBadDirs,
 	cli,
 	cliEntry,
+	cmpGoodDir,
 	jwt01BadDir,
 	jwt03BadDir,
 	jwt03BadFile,
@@ -195,7 +196,7 @@ jwt.decode("token");
 	});
 
 	it("CS-CLI-80 no findings without fail-on leaves stderr empty", () => {
-		const result = cli(["--no-config", jwt03GoodDir]);
+		const result = cli(["--no-config", cmpGoodDir]);
 		expect(result.status).toBe(0);
 		expect(result.stdout).toContain("No findings.");
 		expect(result.stderr).toBe("");
@@ -326,11 +327,11 @@ jwt.decode("token");
 		expect(result.stderr).not.toContain("~/foo");
 	}, 15_000);
 
-	it("CS-CLI-92 --list-rules prints all 12 rules as JSON", () => {
+	it("CS-CLI-92 --list-rules prints all 19 rules as JSON", () => {
 		const result = cli(["--list-rules"]);
 		expect(result.status).toBe(0);
 		const rules = JSON.parse(result.stdout);
-		expect(rules).toHaveLength(12);
+		expect(rules).toHaveLength(19);
 		expect(rules.map((rule: { id: string }) => rule.id)).toContain("CS-JWT-01");
 		expect(rules[0]).toMatchObject({
 			id: expect.any(String),

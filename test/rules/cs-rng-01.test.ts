@@ -61,7 +61,7 @@ describe("CS-RNG-01 rule registry", () => {
 		expect(csRng01Rule.title).toBe("Math.random in auth context");
 		expect(csRng01Rule.severity).toBe("high");
 		expect(fromRegistry).toBe(csRng01Rule);
-		expect(allRules[5]).toBe(csRng01Rule);
+		expect(allRules[7]).toBe(csRng01Rule);
 	});
 });
 

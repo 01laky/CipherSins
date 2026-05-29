@@ -3,6 +3,41 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.3.0]
+
+### Added
+
+- **CS-HASH-04** — flags tracked `scrypt` / `scryptSync` with explicit options where `cost` < 16_384, `blockSize` < 8, or `parallelization` < 1 in password context; omits default Node scrypt parameters and callback-only async forms.
+- **CS-HASH-05** — flags `argon2` / `@node-rs/argon2` `hash` / `hashSync` with `timeCost` < 3 or `memoryCost` < 65_536 KiB in password context.
+- **CS-ENC-03** — flags weak or deprecated cipher algorithms (`des*`, `rc4`, `rc2`, `bf`, `cast*`) on tracked `createCipheriv` / `createDecipheriv`.
+- **CS-ENC-04** — flags ECB mode ciphers (algorithm literals ending in `-ecb`).
+- **CS-JWT-05** — flags `jwt.sign()` without `expiresIn` or numeric payload `exp`.
+- **CS-JWT-06** — flags `jwt.sign()` with `noTimestamp: true` and no compensating expiry.
+- **CS-RNG-02** — flags `crypto.randomBytes(n)` with literal **n < 16** in auth-related naming context.
+- **Shared helpers** — `scrypt-cost`, `argon2-bindings`, `argon2-params`, `weak-cipher-algorithms`, `ecb-cipher-algorithms`, `jwt-sign-options`, `random-bytes-length`; extended `hash-bindings`, `cipher-literals`, `jsonwebtoken-bindings`.
+- **Fixtures** — `fixtures/cs-hash-04`, `cs-hash-05`, `cs-enc-03`, `cs-enc-04`, `cs-jwt-05`, `cs-jwt-06`, `cs-rng-02` with bad/good samples; JWT-01 re-export and ENC-01 const-key fixtures.
+- **Rule documentation** — seven new `docs/rules/CS-*.md` files; CS-ENC-01 and CS-JWT-01 enhancement sections.
+- **SARIF CWE tags** — driver rule `properties.tags` include `external/cwe/cwe-*` per rule family.
+- **FAQ overlap matrix** — central rule-overlap table in `docs/faq.md` with `CS-FAQ-INT-01` vitest coverage.
+- **Vitest coverage** — **1722** tests (≥293 new vs v1.2.0 baseline of 1429); per-rule suites, `cs-v13-edge`, `cs-v13-overlap`, helper tests, suppression fixtures (`suppressions-v13`).
+
+### Changed
+
+- **CS-ENC-01 enhancement** — same-file `const` / `let` identifier resolution for hardcoded key/IV via `expressionResolvesToHardcodedSecretMaterial` (closes `gcm-hardcoded-key-with-options` gap).
+- **CS-JWT-01 enhancement** — same-file `export { verify } from 'jsonwebtoken'` with at least one tracked `verify()` call suppresses decode findings in that file.
+- **`allRules` registry** — seven new rules registered (**19/19** total) in stable JWT → CMP → RNG → HASH → ENC → DEC order.
+- **Architecture diagrams** — `rules-overview.mmd` and `pipeline.mmd` updated to 19 rules; SVGs regenerated.
+- **GitHub Action default version** — composite action `version` input default `1.2.0` → `1.3.0`.
+- **action-smoke.yml** — HASH-04 and JWT-05 good fixture scan steps after ENC good step.
+
+### Documentation
+
+- **Rules index** — `docs/rules/README.md` lists 19/19 implemented rules.
+- **README** — rule table, badges, and status updated for v1.3.0.
+- **comparison.md**, **proposal.md**, **github-action.md**, **development.md**, **faq.md** — v1.3 scope and overlap matrix.
+- **ciphersins.config.example.json** — severity examples for all seven new rules.
+- **Public exports** — `SCRYPT_MIN_*`, `ARGON2_MIN_*`, `RNG_MIN_AUTH_BYTES` from package entry.
+
 ## [1.2.0]
 
 ### Added

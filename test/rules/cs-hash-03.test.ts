@@ -49,7 +49,7 @@ describe("CS-HASH-03 rule registry", () => {
 	});
 
 	it("CS-HASH-03-03 csHash03Rule is registered at index 8 after CS-HASH-02", () => {
-		expect(allRules[8]).toBe(csHash03Rule);
+		expect(allRules[11]).toBe(csHash03Rule);
 		expect(allRules.find((rule) => rule.id === "CS-HASH-03")).toBe(
 			csHash03Rule,
 		);

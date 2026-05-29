@@ -26,20 +26,9 @@ const jwt03GoodDir = path.join(rootDir, "fixtures/cs-jwt-03/good");
 const jwt02GoodDir = path.join(rootDir, "fixtures/cs-jwt-02/good");
 const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
-const allBadDirs = [
-	path.join(rootDir, "fixtures/cs-jwt-01/bad"),
-	path.join(rootDir, "fixtures/cs-jwt-02/bad"),
-	jwt03BadDir,
-	path.join(rootDir, "fixtures/cs-jwt-04/bad"),
-	path.join(rootDir, "fixtures/cs-cmp-01/bad"),
-	path.join(rootDir, "fixtures/cs-rng-01/bad"),
-	path.join(rootDir, "fixtures/cs-hash-01/bad"),
-	path.join(rootDir, "fixtures/cs-hash-02/bad"),
-	path.join(rootDir, "fixtures/cs-enc-01/bad"),
-	path.join(rootDir, "fixtures/cs-enc-02/bad"),
-	path.join(rootDir, "fixtures/cs-dec-01/bad"),
-	path.join(rootDir, "fixtures/cs-hash-03/bad"),
-];
+import { allBadDirs as allBadDirsFromHelpers } from "../cli/helpers.js";
+
+const allBadDirs = allBadDirsFromHelpers;
 
 const allGoodDirs = [
 	path.join(rootDir, "fixtures/cs-jwt-01/good"),
@@ -112,13 +101,20 @@ describe("CS-JWT-03 rule registry", () => {
 			"CS-JWT-02",
 			"CS-JWT-03",
 			"CS-JWT-04",
+			"CS-JWT-05",
+			"CS-JWT-06",
 			"CS-CMP-01",
 			"CS-RNG-01",
+			"CS-RNG-02",
 			"CS-HASH-01",
 			"CS-HASH-02",
 			"CS-HASH-03",
+			"CS-HASH-04",
+			"CS-HASH-05",
 			"CS-ENC-01",
 			"CS-ENC-02",
+			"CS-ENC-03",
+			"CS-ENC-04",
 			"CS-DEC-01",
 		]);
 	});
@@ -137,10 +133,10 @@ describe("CS-JWT-03 directory scans", () => {
 		);
 	});
 
-	it("CS-JWT-03-05 reports no findings for good fixtures with all rules", async () => {
+	it("CS-JWT-03-05 reports no JWT-03 findings for good fixtures with all rules", async () => {
 		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
 
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-JWT-03")).toEqual([]);
 	});
 });
 
@@ -455,22 +451,22 @@ describe("CS-JWT-03 per-file good fixtures", () => {
 		expect(result.findings).toEqual([]);
 	});
 
-	it("CS-JWT-03-41 sign-algorithm-hs256.ts yields zero findings", async () => {
+	it("CS-JWT-03-41 sign-algorithm-hs256.ts yields no JWT-03 findings", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "sign-algorithm-hs256.ts")],
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-JWT-03")).toEqual([]);
 	});
 
-	it("CS-JWT-03-42 sign-default-two-arg.ts yields zero findings", async () => {
+	it("CS-JWT-03-42 sign-default-two-arg.ts yields no JWT-03 findings", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "sign-default-two-arg.ts")],
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-JWT-03")).toEqual([]);
 	});
 
 	it("CS-JWT-03-43 no-jsonwebtoken.ts yields zero findings", async () => {
@@ -603,15 +599,12 @@ describe("CS-JWT-03 metadata and snapshots", () => {
 		expect(result.stdout).toMatch(/CS-JWT-03\s+critical/);
 	});
 
-	it("CS-JWT-03-59 CLI good directory scan reports No findings", () => {
-		const result = spawnSync(
-			process.execPath,
-			[cliEntry, "scan", jwt03GoodDir],
-			{
-				encoding: "utf8",
-				cwd: rootDir,
-			},
-		);
+	it("CS-JWT-03-59 CLI clean good file scan reports No findings", () => {
+		const cleanFile = fixturePath("good", "verify-algorithms-multiple-safe.ts");
+		const result = spawnSync(process.execPath, [cliEntry, "scan", cleanFile], {
+			encoding: "utf8",
+			cwd: rootDir,
+		});
 
 		expect(result.status).toBe(0);
 		expect(result.stdout).toContain("No findings.");
@@ -716,11 +709,11 @@ describe("CS-JWT-03 extended edge cases", () => {
 		expect(new Set(signatures).size).toBe(27);
 	});
 
-	it("CS-JWT-03-70 good directory scans exactly 15 files", async () => {
+	it("CS-JWT-03-70 good directory scans exactly 15 files with no JWT-03 findings", async () => {
 		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
 
 		expect(result.scannedFiles).toHaveLength(15);
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-JWT-03")).toEqual([]);
 	});
 
 	it("CS-JWT-03-71 sign-algorithm-none.ts flags sign not verify", async () => {
@@ -733,13 +726,13 @@ describe("CS-JWT-03 extended edge cases", () => {
 		expect(result.findings[0]?.snippet).toContain("jwt.sign");
 	});
 
-	it("CS-JWT-03-72 combined twelve bad dirs summary critical high medium and total counts", async () => {
+	it("CS-JWT-03-72 combined nineteen bad dirs summary critical high medium and total counts", async () => {
 		const result = await scan({ paths: allBadDirs, cwd: rootDir });
 
-		expect(result.summary.critical).toBe(27);
-		expect(result.summary.high).toBe(122);
-		expect(result.summary.medium).toBe(76);
-		expect(result.findings).toHaveLength(225);
+		expect(result.summary.critical).toBe(28);
+		expect(result.summary.high).toBe(136);
+		expect(result.summary.medium).toBe(107);
+		expect(result.findings).toHaveLength(271);
 	});
 
 	it("CS-JWT-03-73 verify-algorithms-none-and-hs256.ts yields exactly one finding", async () => {
@@ -777,10 +770,10 @@ jwt.sign({ sub: "u" }, secret, { algorithm: "HS256" });
 		).toHaveLength(1);
 	});
 
-	it("CS-JWT-03-75 jwt-02 good directory scans clean with all rules", async () => {
+	it("CS-JWT-03-75 jwt-02 good directory has no JWT-03 findings with all rules", async () => {
 		const result = await scan({ paths: [jwt02GoodDir], cwd: rootDir });
 
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-JWT-03")).toHaveLength(0);
 	});
 
 	it("CS-JWT-03-76 verify-wrong-key-algorithm.ts yields zero JWT-03 findings", async () => {
@@ -792,15 +785,12 @@ jwt.sign({ sub: "u" }, secret, { algorithm: "HS256" });
 		expect(filterByRule(result.findings, "CS-JWT-03")).toHaveLength(0);
 	});
 
-	it("CS-JWT-03-77 CLI good dir prints No findings", () => {
-		const result = spawnSync(
-			process.execPath,
-			[cliEntry, "scan", jwt03GoodDir],
-			{
-				encoding: "utf8",
-				cwd: rootDir,
-			},
-		);
+	it("CS-JWT-03-77 CLI clean good file prints No findings", () => {
+		const cleanFile = fixturePath("good", "verify-algorithms-multiple-safe.ts");
+		const result = spawnSync(process.execPath, [cliEntry, "scan", cleanFile], {
+			encoding: "utf8",
+			cwd: rootDir,
+		});
 
 		expect(result.stdout).toContain("No findings.");
 	});
@@ -954,18 +944,23 @@ jwt.sign({ sub: "u" }, secret, { algorithm: "HS256" });
 		);
 	});
 
-	it("CS-JWT-03-92 entire jwt-03 good directory stays clean with all twelve rules", async () => {
+	it("CS-JWT-03-92 entire jwt-03 good directory has no JWT-03 with nineteen rules", async () => {
 		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
 
 		expect(result.scannedFiles).toHaveLength(15);
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-JWT-03")).toEqual([]);
 	});
 
-	it("CS-JWT-03-93 all eight good fixture directories scan clean together", async () => {
+	it("CS-JWT-03-93 all eight good fixture directories yield HASH-02 and JWT-05 only", async () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
-		expect(result.findings).toHaveLength(1);
-		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
+		expect(result.findings).toHaveLength(5);
+		expect(
+			result.findings.filter((f) => f.ruleId === "CS-HASH-02"),
+		).toHaveLength(1);
+		expect(
+			result.findings.filter((f) => f.ruleId === "CS-JWT-05"),
+		).toHaveLength(4);
 	});
 
 	it("CS-JWT-03-94 CLI bad scan matches verify-named-import-none.ts path format", () => {

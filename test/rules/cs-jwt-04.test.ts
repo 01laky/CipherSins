@@ -110,13 +110,20 @@ describe("CS-JWT-04 rule registry", () => {
 			"CS-JWT-02",
 			"CS-JWT-03",
 			"CS-JWT-04",
+			"CS-JWT-05",
+			"CS-JWT-06",
 			"CS-CMP-01",
 			"CS-RNG-01",
+			"CS-RNG-02",
 			"CS-HASH-01",
 			"CS-HASH-02",
 			"CS-HASH-03",
+			"CS-HASH-04",
+			"CS-HASH-05",
 			"CS-ENC-01",
 			"CS-ENC-02",
+			"CS-ENC-03",
+			"CS-ENC-04",
 			"CS-DEC-01",
 		]);
 	});
@@ -383,13 +390,13 @@ describe("CS-JWT-04 per-file good fixtures", () => {
 		expect(result.findings).toEqual([]);
 	});
 
-	it("CS-JWT-04-40 sign-only.ts yields zero findings", async () => {
+	it("CS-JWT-04-40 sign-only.ts yields no JWT-04 findings", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "sign-only.ts")],
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-JWT-04")).toEqual([]);
 	});
 
 	it("CS-JWT-04-41 no-jsonwebtoken.ts yields zero findings", async () => {
@@ -936,11 +943,11 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(23);
 	});
 
-	it("CS-JWT-04-98 entire jwt-04 good directory stays clean with all twelve rules", async () => {
+	it("CS-JWT-04-98 entire jwt-04 good directory has no JWT-04 with nineteen rules", async () => {
 		const result = await scan({ paths: [jwt04GoodDir], cwd: rootDir });
 
 		expect(result.scannedFiles).toHaveLength(13);
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-JWT-04")).toEqual([]);
 	});
 
 	it("CS-JWT-04-99 verify-max-age-and-ignore-expiration.ts flags ignoreExpiration despite maxAge", async () => {
@@ -976,11 +983,16 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 		).toMatchSnapshot();
 	});
 
-	it("CS-JWT-04-102 all eight good fixture directories scan clean together", async () => {
+	it("CS-JWT-04-102 all eight good fixture directories yield HASH-02 and JWT-05 only", async () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
-		expect(result.findings).toHaveLength(1);
-		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
+		expect(result.findings).toHaveLength(5);
+		expect(
+			result.findings.filter((f) => f.ruleId === "CS-HASH-02"),
+		).toHaveLength(1);
+		expect(
+			result.findings.filter((f) => f.ruleId === "CS-JWT-05"),
+		).toHaveLength(4);
 	});
 
 	it("CS-JWT-04-103 verify-in-dead-code-ignore-expiration.ts still flags unreachable verify", async () => {

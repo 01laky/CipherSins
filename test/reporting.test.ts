@@ -24,12 +24,12 @@ describe("CS-REP core reporting exports", () => {
 		expect(doc.tool).toBe("ciphersins");
 	});
 
-	it("CS-REP-02 formatSarif driver rules length is 12", async () => {
+	it("CS-REP-02 formatSarif driver rules length is 19", async () => {
 		const result = await scan({ paths: [jwt03BadFile], cwd: rootDir });
 		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const doc = JSON.parse(sarif);
-		expect(doc.runs[0].tool.driver.rules).toHaveLength(12);
-		expect(allRules).toHaveLength(12);
+		expect(doc.runs[0].tool.driver.rules).toHaveLength(19);
+		expect(allRules).toHaveLength(19);
 	});
 
 	it("CS-REP-03 each SARIF driver rule has help.text", async () => {

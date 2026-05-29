@@ -63,6 +63,24 @@ jobs:
           format: json
           write-summary: false
 
+      - name: HASH-04 good fixture should pass
+        uses: ./.github/actions/scan
+        with:
+          path: fixtures/cs-hash-04/good
+          fail-on: high
+          upload-sarif: false
+          version: workspace
+          write-summary: false
+
+      - name: JWT-05 good fixture should pass
+        uses: ./.github/actions/scan
+        with:
+          path: fixtures/cs-jwt-05/good
+          fail-on: high
+          upload-sarif: false
+          version: workspace
+          write-summary: false
+
       - name: Soft-fail allows exit 1
         uses: ./.github/actions/scan
         with:

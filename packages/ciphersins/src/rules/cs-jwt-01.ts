@@ -43,6 +43,8 @@ export const csJwt01Rule: Rule = {
 		const verifyCalls = calls.filter((call) =>
 			matchesJsonWebTokenMethodCall(call, bindings, "verify"),
 		);
+		const fileHasVerifyCall = verifyCalls.length > 0;
+		const fileHasVerifyReexport = bindings.hasVerifyReexport;
 
 		const findings: Finding[] = [];
 
@@ -56,6 +58,10 @@ export const csJwt01Rule: Rule = {
 					verifyCallSuppressesDecode(call, verifyCall, context.sourceFile),
 				)
 			) {
+				continue;
+			}
+
+			if (fileHasVerifyReexport && fileHasVerifyCall) {
 				continue;
 			}
 

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
 	expressionIsHardcodedSecretMaterial,
 	expressionIsSecureRandomIv,
+	expressionResolvesToHardcodedSecretMaterial,
 	isAesGcmAlgorithmLiteral,
 	literalMaterialKey,
 } from "../../packages/ciphersins/src/rules/helpers/cipher-literals.js";
@@ -227,5 +228,83 @@ describe("cipher literal helpers", () => {
 		);
 
 		expect(expressionIsHardcodedSecretMaterial(expr)).toBe(true);
+	});
+});
+
+describe("expressionResolvesToHardcodedSecretMaterial (v1.3)", () => {
+	it("CS-CLIT-16 resolves const string key identifier to hardcoded material", () => {
+		const source = [
+			"const key = 'hardcoded-key-16b';",
+			"const use = key;",
+		].join("\n");
+		const sourceFile = parseSource(source);
+		const id = exprAt(source, "key");
+
+		expect(expressionResolvesToHardcodedSecretMaterial(id, sourceFile)).toBe(
+			true,
+		);
+	});
+
+	it("CS-CLIT-17 resolves let numeric iv identifier", () => {
+		const source = ["let iv = 12345;", "const use = iv;"].join("\n");
+		const sourceFile = parseSource(source);
+		const id = exprAt(source, "iv");
+
+		expect(expressionResolvesToHardcodedSecretMaterial(id, sourceFile)).toBe(
+			true,
+		);
+	});
+
+	it("CS-CLIT-18 resolves const Buffer.from identifier", () => {
+		const source = [
+			'const key = Buffer.from("secret-material");',
+			"const use = key;",
+		].join("\n");
+		const sourceFile = parseSource(source);
+		const id = exprAt(source, "key");
+
+		expect(expressionResolvesToHardcodedSecretMaterial(id, sourceFile)).toBe(
+			true,
+		);
+	});
+
+	it("CS-CLIT-19 unresolved identifier returns false", () => {
+		const source = "const use = unknownKey;";
+		const sourceFile = parseSource(source);
+		const id = exprAt(source, "unknownKey");
+
+		expect(expressionResolvesToHardcodedSecretMaterial(id, sourceFile)).toBe(
+			false,
+		);
+	});
+
+	it("CS-CLIT-20 identifier bound to process.env returns false", () => {
+		const source = [
+			"const key = process.env.CIPHER_KEY;",
+			"const use = key;",
+		].join("\n");
+		const sourceFile = parseSource(source);
+		const id = exprAt(source, "key");
+
+		expect(expressionResolvesToHardcodedSecretMaterial(id, sourceFile)).toBe(
+			false,
+		);
+	});
+
+	it("CS-CLIT-21 direct literal still true without resolution", () => {
+		const sourceFile = parseSource("'literal-key';");
+		const expr = exprAt("'literal-key';", "literal");
+
+		expect(expressionResolvesToHardcodedSecretMaterial(expr, sourceFile)).toBe(
+			true,
+		);
+	});
+
+	it("CS-CLIT-22 undefined expression returns false", () => {
+		const sourceFile = parseSource("const x = 1;");
+
+		expect(
+			expressionResolvesToHardcodedSecretMaterial(undefined, sourceFile),
+		).toBe(false);
 	});
 });

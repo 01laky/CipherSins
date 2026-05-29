@@ -10,6 +10,8 @@ const CRYPTO_HASH_IMPORTS = new Set([
 	"createHmac",
 	"pbkdf2",
 	"pbkdf2Sync",
+	"scrypt",
+	"scryptSync",
 ]);
 
 export interface HashBindings {
@@ -17,6 +19,8 @@ export interface HashBindings {
 	createHmacIdentifiers: Set<string>;
 	pbkdf2Identifiers: Set<string>;
 	pbkdf2SyncIdentifiers: Set<string>;
+	scryptIdentifiers: Set<string>;
+	scryptSyncIdentifiers: Set<string>;
 	cryptoMemberObjects: Set<string>;
 	md5PackageIdentifiers: Set<string>;
 	sha1PackageIdentifiers: Set<string>;
@@ -28,6 +32,8 @@ export function createEmptyHashBindings(): HashBindings {
 		createHmacIdentifiers: new Set<string>(),
 		pbkdf2Identifiers: new Set<string>(),
 		pbkdf2SyncIdentifiers: new Set<string>(),
+		scryptIdentifiers: new Set<string>(),
+		scryptSyncIdentifiers: new Set<string>(),
 		cryptoMemberObjects: new Set<string>(),
 		md5PackageIdentifiers: new Set<string>(),
 		sha1PackageIdentifiers: new Set<string>(),
@@ -150,6 +156,12 @@ function trackCryptoHashIdentifier(
 		case "pbkdf2Sync":
 			bindings.pbkdf2SyncIdentifiers.add(localName);
 			break;
+		case "scrypt":
+			bindings.scryptIdentifiers.add(localName);
+			break;
+		case "scryptSync":
+			bindings.scryptSyncIdentifiers.add(localName);
+			break;
 		default:
 			break;
 	}
@@ -270,7 +282,13 @@ export function getHashBindings(sourceFile: ts.SourceFile): HashBindings {
 function isTrackedCryptoMemberAccess(
 	callee: ts.PropertyAccessExpression,
 	bindings: HashBindings,
-	method: "createHash" | "createHmac" | "pbkdf2" | "pbkdf2Sync",
+	method:
+		| "createHash"
+		| "createHmac"
+		| "pbkdf2"
+		| "pbkdf2Sync"
+		| "scrypt"
+		| "scryptSync",
 ): boolean {
 	if (callee.name.text !== method) {
 		return false;

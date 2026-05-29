@@ -35,11 +35,27 @@ export const enc01BadDir = path.join(rootDir, "fixtures/cs-enc-01/bad");
 export const enc02BadDir = path.join(rootDir, "fixtures/cs-enc-02/bad");
 export const dec01BadDir = path.join(rootDir, "fixtures/cs-dec-01/bad");
 export const hash03BadDir = path.join(rootDir, "fixtures/cs-hash-03/bad");
+export const hash04BadDir = path.join(rootDir, "fixtures/cs-hash-04/bad");
+export const hash05BadDir = path.join(rootDir, "fixtures/cs-hash-05/bad");
+export const enc03BadDir = path.join(rootDir, "fixtures/cs-enc-03/bad");
+export const enc04BadDir = path.join(rootDir, "fixtures/cs-enc-04/bad");
+export const jwt05BadDir = path.join(rootDir, "fixtures/cs-jwt-05/bad");
+export const jwt06BadDir = path.join(rootDir, "fixtures/cs-jwt-06/bad");
+export const rng02BadDir = path.join(rootDir, "fixtures/cs-rng-02/bad");
 export const enc01GoodDir = path.join(rootDir, "fixtures/cs-enc-01/good");
 export const enc02GoodDir = path.join(rootDir, "fixtures/cs-enc-02/good");
 export const dec01GoodDir = path.join(rootDir, "fixtures/cs-dec-01/good");
 export const hash03GoodDir = path.join(rootDir, "fixtures/cs-hash-03/good");
+export const hash04GoodDir = path.join(rootDir, "fixtures/cs-hash-04/good");
+export const hash05GoodDir = path.join(rootDir, "fixtures/cs-hash-05/good");
+export const enc03GoodDir = path.join(rootDir, "fixtures/cs-enc-03/good");
+export const enc04GoodDir = path.join(rootDir, "fixtures/cs-enc-04/good");
+export const jwt05GoodDir = path.join(rootDir, "fixtures/cs-jwt-05/good");
+export const jwt06GoodDir = path.join(rootDir, "fixtures/cs-jwt-06/good");
+export const rng02GoodDir = path.join(rootDir, "fixtures/cs-rng-02/good");
 export const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
+export const cmpGoodDir = path.join(rootDir, "fixtures/cs-cmp-01/good");
+export const scaffoldDir = path.join(rootDir, "test/scaffold");
 export const ciFixtureDir = path.join(rootDir, "test/fixtures/ci");
 
 export const allBadDirs = [
@@ -47,14 +63,21 @@ export const allBadDirs = [
 	jwt02BadDir,
 	jwt03BadDir,
 	jwt04BadDir,
+	jwt05BadDir,
+	jwt06BadDir,
 	path.join(rootDir, "fixtures/cs-cmp-01/bad"),
 	path.join(rootDir, "fixtures/cs-rng-01/bad"),
+	rng02BadDir,
 	path.join(rootDir, "fixtures/cs-hash-01/bad"),
 	path.join(rootDir, "fixtures/cs-hash-02/bad"),
 	enc01BadDir,
 	enc02BadDir,
+	enc03BadDir,
+	enc04BadDir,
 	dec01BadDir,
 	hash03BadDir,
+	hash04BadDir,
+	hash05BadDir,
 ];
 
 export function cli(

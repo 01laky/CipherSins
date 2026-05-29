@@ -8,6 +8,7 @@ export interface JsonWebTokenBindings {
 	signIdentifiers: Set<string>;
 	memberObjects: Set<string>;
 	hasInlineRequire: boolean;
+	hasVerifyReexport: boolean;
 }
 
 export function createEmptyJsonWebTokenBindings(): JsonWebTokenBindings {
@@ -17,6 +18,7 @@ export function createEmptyJsonWebTokenBindings(): JsonWebTokenBindings {
 		signIdentifiers: new Set<string>(),
 		memberObjects: new Set<string>(),
 		hasInlineRequire: false,
+		hasVerifyReexport: false,
 	};
 }
 
@@ -28,6 +30,10 @@ export function getJsonWebTokenBindings(
 	function visit(node: ts.Node): void {
 		if (ts.isImportDeclaration(node)) {
 			handleImportDeclaration(node, bindings);
+		}
+
+		if (ts.isExportDeclaration(node)) {
+			handleExportDeclaration(node, bindings);
 		}
 
 		if (ts.isVariableStatement(node)) {
@@ -98,6 +104,29 @@ function handleImportDeclaration(
 			if (importedName === "sign") {
 				bindings.signIdentifiers.add(localName);
 			}
+		}
+	}
+}
+
+function handleExportDeclaration(
+	node: ts.ExportDeclaration,
+	bindings: JsonWebTokenBindings,
+): void {
+	if (!node.moduleSpecifier || !ts.isStringLiteral(node.moduleSpecifier)) {
+		return;
+	}
+	if (node.moduleSpecifier.text !== JSONWEBTOKEN) {
+		return;
+	}
+	if (!node.exportClause || !ts.isNamedExports(node.exportClause)) {
+		return;
+	}
+	for (const element of node.exportClause.elements) {
+		const exportedName = element.name.text;
+		const importedName = element.propertyName?.text ?? exportedName;
+		if (importedName === "verify") {
+			bindings.hasVerifyReexport = true;
+			bindings.verifyIdentifiers.add(exportedName);
 		}
 	}
 }

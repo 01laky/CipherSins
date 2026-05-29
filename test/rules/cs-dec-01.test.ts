@@ -43,7 +43,7 @@ describe("CS-DEC-01 rule registry", () => {
 	});
 
 	it("CS-DEC-01-03 csDec01Rule is registered at index 11 after CS-ENC-02", () => {
-		expect(allRules[11]).toBe(csDec01Rule);
+		expect(allRules[18]).toBe(csDec01Rule);
 		expect(allRules.find((rule) => rule.id === "CS-DEC-01")).toBe(csDec01Rule);
 	});
 });

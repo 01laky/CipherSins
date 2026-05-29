@@ -24,7 +24,25 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## How many rules are implemented?
 
-**12/12 rules** at **1.2.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02, CS-ENC-01, CS-ENC-02, CS-DEC-01, CS-HASH-03. See [rules index](./rules/README.md).
+**19/19 rules** at **1.3.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-JWT-05, CS-JWT-06, CS-CMP-01, CS-RNG-01, CS-RNG-02, CS-HASH-01, CS-HASH-02, CS-HASH-03, CS-HASH-04, CS-HASH-05, CS-ENC-01, CS-ENC-02, CS-ENC-03, CS-ENC-04, CS-DEC-01. See [rules index](./rules/README.md).
+
+## Rule overlap matrix (v1.3)
+
+Some call sites trigger multiple rules — each rule checks a different aspect. Use this table to understand double findings; suppress only the rules you intend to waive.
+
+| Pattern (simplified)                                            | Rules triggered                                          |
+| --------------------------------------------------------------- | -------------------------------------------------------- |
+| `pbkdf2Sync(pwd, salt, 1000, 32, 'md5')` in password context    | **CS-HASH-01** + **CS-HASH-03**                          |
+| `scryptSync(pwd, salt, 64, { cost: 8192 })` in password context | **CS-HASH-04**                                           |
+| `argon2.hash(pwd, { timeCost: 2 })` in password context         | **CS-HASH-05**                                           |
+| `createCipheriv("des-cbc", hardcoded key, iv)`                  | **CS-ENC-01** + **CS-ENC-03**                            |
+| `createCipheriv("aes-128-ecb", key, iv)`                        | **CS-ENC-04** (also **CS-ENC-01** when key is hardcoded) |
+| `jwt.sign(payload, secret)` (no expiry)                         | **CS-JWT-05**                                            |
+| `jwt.sign(payload, secret, { noTimestamp: true })` (no expiry)  | **CS-JWT-05** + **CS-JWT-06**                            |
+| `jwt.sign(payload, secret, { algorithm: 'none' })` (no expiry)  | **CS-JWT-03** + **CS-JWT-05**                            |
+| `Math.random()` + `randomBytes(4)` in auth-named function       | **CS-RNG-01** + **CS-RNG-02**                            |
+
+HASH-03, HASH-04, and HASH-05 do not overlap with each other — each applies to a different KDF API. ENC-03 (weak cipher) and ENC-04 (ECB mode) are independent checks; both can fire alongside ENC-01 when keys are hardcoded.
 
 ## CS-HASH-01 vs CS-HASH-03 — what's the difference?
 
@@ -78,7 +96,7 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | **CS-SUP-07–22**     | Suppression audit         |
 | **CS-REP-EXT-21–38** | JSON/SARIF audit          |
 
-Run `pnpm test` or `npm test` for the full suite (**1164** tests at v1.0.0). CI uses `npm run test:ci` (coverage + JUnit).
+Run `pnpm test` or `npm test` for the full suite (**1722** tests at v1.3.0). CI uses `npm run test:ci` (coverage + JUnit).
 
 ## How do I run CipherSins in CI?
 

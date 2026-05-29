@@ -3,7 +3,7 @@
 exports[`CS-CLI format and output integration > CS-CLI-20 JSON golden snapshot for jwt-03 bad file 1`] = `
 "{
   "schemaVersion": 2,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "tool": "ciphersins",
   "summary": {
     "low": 0,
@@ -98,6 +98,8 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "high",
+                  "external/cwe/cwe-347",
+                  "external/cwe/cwe-613",
                 ],
               },
               "shortDescription": {
@@ -122,6 +124,8 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "high",
+                  "external/cwe/cwe-347",
+                  "external/cwe/cwe-613",
                 ],
               },
               "shortDescription": {
@@ -146,6 +150,8 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "critical",
+                  "external/cwe/cwe-347",
+                  "external/cwe/cwe-613",
                 ],
               },
               "shortDescription": {
@@ -170,10 +176,64 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "medium",
+                  "external/cwe/cwe-347",
+                  "external/cwe/cwe-613",
                 ],
               },
               "shortDescription": {
                 "text": "JWT verify ignores expiration",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning",
+              },
+              "fullDescription": {
+                "text": "JWT sign without expiry",
+              },
+              "help": {
+                "text": "See [CS-JWT-05](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-05.md) — JWT sign without expiry.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-05.md",
+              "id": "CS-JWT-05",
+              "name": "CSJWT05",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                  "external/cwe/cwe-347",
+                  "external/cwe/cwe-613",
+                ],
+              },
+              "shortDescription": {
+                "text": "JWT sign without expiry",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning",
+              },
+              "fullDescription": {
+                "text": "JWT sign with noTimestamp",
+              },
+              "help": {
+                "text": "See [CS-JWT-06](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-06.md) — JWT sign with noTimestamp.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-06.md",
+              "id": "CS-JWT-06",
+              "name": "CSJWT06",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                  "external/cwe/cwe-347",
+                  "external/cwe/cwe-613",
+                ],
+              },
+              "shortDescription": {
+                "text": "JWT sign with noTimestamp",
               },
             },
             {
@@ -194,6 +254,7 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "high",
+                  "external/cwe/cwe-208",
                 ],
               },
               "shortDescription": {
@@ -218,10 +279,38 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "high",
+                  "external/cwe/cwe-338",
+                  "external/cwe/cwe-330",
                 ],
               },
               "shortDescription": {
                 "text": "Math.random in auth context",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error",
+              },
+              "fullDescription": {
+                "text": "randomBytes length too small",
+              },
+              "help": {
+                "text": "See [CS-RNG-02](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-RNG-02.md) — randomBytes length too small.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-RNG-02.md",
+              "id": "CS-RNG-02",
+              "name": "CSRNG02",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                  "external/cwe/cwe-338",
+                  "external/cwe/cwe-330",
+                ],
+              },
+              "shortDescription": {
+                "text": "randomBytes length too small",
               },
             },
             {
@@ -242,6 +331,8 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "high",
+                  "external/cwe/cwe-916",
+                  "external/cwe/cwe-328",
                 ],
               },
               "shortDescription": {
@@ -266,6 +357,8 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "medium",
+                  "external/cwe/cwe-916",
+                  "external/cwe/cwe-328",
                 ],
               },
               "shortDescription": {
@@ -290,10 +383,64 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "medium",
+                  "external/cwe/cwe-916",
+                  "external/cwe/cwe-328",
                 ],
               },
               "shortDescription": {
                 "text": "PBKDF2 iteration count too low",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning",
+              },
+              "fullDescription": {
+                "text": "scrypt cost factor too low",
+              },
+              "help": {
+                "text": "See [CS-HASH-04](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-04.md) — scrypt cost factor too low.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-04.md",
+              "id": "CS-HASH-04",
+              "name": "CSHASH04",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                  "external/cwe/cwe-916",
+                  "external/cwe/cwe-328",
+                ],
+              },
+              "shortDescription": {
+                "text": "scrypt cost factor too low",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning",
+              },
+              "fullDescription": {
+                "text": "argon2 parameters too low",
+              },
+              "help": {
+                "text": "See [CS-HASH-05](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-05.md) — argon2 parameters too low.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-05.md",
+              "id": "CS-HASH-05",
+              "name": "CSHASH05",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                  "external/cwe/cwe-916",
+                  "external/cwe/cwe-328",
+                ],
+              },
+              "shortDescription": {
+                "text": "argon2 parameters too low",
               },
             },
             {
@@ -314,6 +461,8 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "medium",
+                  "external/cwe/cwe-327",
+                  "external/cwe/cwe-326",
                 ],
               },
               "shortDescription": {
@@ -338,10 +487,64 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "high",
+                  "external/cwe/cwe-327",
+                  "external/cwe/cwe-326",
                 ],
               },
               "shortDescription": {
                 "text": "AES-GCM static or reused IV",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error",
+              },
+              "fullDescription": {
+                "text": "Weak or deprecated cipher algorithm",
+              },
+              "help": {
+                "text": "See [CS-ENC-03](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-03.md) — Weak or deprecated cipher algorithm.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-03.md",
+              "id": "CS-ENC-03",
+              "name": "CSENC03",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                  "external/cwe/cwe-327",
+                  "external/cwe/cwe-326",
+                ],
+              },
+              "shortDescription": {
+                "text": "Weak or deprecated cipher algorithm",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error",
+              },
+              "fullDescription": {
+                "text": "ECB mode cipher",
+              },
+              "help": {
+                "text": "See [CS-ENC-04](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-04.md) — ECB mode cipher.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-04.md",
+              "id": "CS-ENC-04",
+              "name": "CSENC04",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                  "external/cwe/cwe-327",
+                  "external/cwe/cwe-326",
+                ],
+              },
+              "shortDescription": {
+                "text": "ECB mode cipher",
               },
             },
             {
@@ -362,6 +565,7 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "tags": [
                   "security",
                   "medium",
+                  "external/cwe/cwe-327",
                 ],
               },
               "shortDescription": {
@@ -369,7 +573,7 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
             },
           ],
-          "version": "1.2.0",
+          "version": "1.3.0",
         },
       },
     },

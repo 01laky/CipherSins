@@ -8,7 +8,14 @@
 		"CS-HASH-02": "warn",
 		"CS-ENC-01": "warn",
 		"CS-ENC-02": "error",
-		"CS-HASH-03": "warn"
+		"CS-HASH-03": "warn",
+		"CS-HASH-04": "warn",
+		"CS-HASH-05": "warn",
+		"CS-ENC-03": "error",
+		"CS-ENC-04": "error",
+		"CS-JWT-05": "warn",
+		"CS-JWT-06": "warn",
+		"CS-RNG-02": "error"
 	},
 	"ignore": []
 }

@@ -1,6 +1,6 @@
 import type { Finding, Rule, RuleContext } from "../types.js";
 import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
-import { expressionIsHardcodedSecretMaterial } from "./helpers/cipher-literals.js";
+import { expressionResolvesToHardcodedSecretMaterial } from "./helpers/cipher-literals.js";
 import {
 	getCipherBindings,
 	getCipherIvArgument,
@@ -39,8 +39,14 @@ export const csEnc01Rule: Rule = {
 
 			const keyArg = getCipherKeyArgument(call);
 			const ivArg = getCipherIvArgument(call);
-			const keyHardcoded = expressionIsHardcodedSecretMaterial(keyArg);
-			const ivHardcoded = expressionIsHardcodedSecretMaterial(ivArg);
+			const keyHardcoded = expressionResolvesToHardcodedSecretMaterial(
+				keyArg,
+				context.sourceFile,
+			);
+			const ivHardcoded = expressionResolvesToHardcodedSecretMaterial(
+				ivArg,
+				context.sourceFile,
+			);
 
 			if (!keyHardcoded && !ivHardcoded) {
 				continue;

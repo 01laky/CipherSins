@@ -57,5 +57,15 @@ exports[`CS-JWT-03 metadata and snapshots > CS-JWT-03-53 golden snapshot sign-al
     "severity": "critical",
     "snippet": "	return jwt.sign(payload, secret, { algorithm: "none" });",
   },
+  {
+    "column": 9,
+    "file": "sign-algorithm-none.ts",
+    "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-05.md",
+    "line": 6,
+    "message": "jwt.sign() without expiresIn or exp claim; tokens may never expire.",
+    "ruleId": "CS-JWT-05",
+    "severity": "medium",
+    "snippet": "	return jwt.sign(payload, secret, { algorithm: "none" });",
+  },
 ]
 `;
