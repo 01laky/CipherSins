@@ -3,6 +3,20 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.3.1]
+
+### Added
+
+- **v1.3.1 test harness** — auto-generated `CS-V131-*` vitest suites via `scripts/generate-v131-tests.mjs` and `npm run generate:v131-tests`; shared helper `test/helpers/v131-scan-source.ts`.
+- **Exhaustive edge-case coverage** — JWT (require/destructuring/spread/none/sign grids), HASH/ENC (algorithm/cost/iteration grids), CMP/RNG (auth vs UI naming), overlap matrix, per-fixture matrix (**414** files), helper unit grid, CLI/scan-engine/reporting expansions, suppression matrix with `allowCriticalIgnore` for **CS-JWT-03**.
+- **Vitest coverage** — **4291** tests (≥2477 new vs v1.3.0 baseline of 1814); no new rules — expectations aligned with current analyzer behavior (e.g. spread `algorithms`, `node:jsonwebtoken` require gap, destructured `decode` binding gap, `apiKey`/`api_key` camelCase split limitation).
+
+### Changed
+
+- **Architecture diagrams** — `pipeline.mmd` documents v1.3.1 test expansion; SVGs regenerated.
+- **GitHub Action default version** — composite action `version` input default `1.3.0` → `1.3.1`.
+- **Docs** — README, development, FAQ, comparison, rules index, and GitHub Action docs updated for **4291** tests and v1.3.1.
+
 ## [1.3.0]
 
 ### Added

@@ -1,6 +1,6 @@
 {
 	"name": "ciphersins",
-	"version": "1.3.0",
+	"version": "1.3.1",
 	"private": true,
 	"description": "Static scanner for JWT, timing, RNG, and password-hashing footguns in Node/TS app code.",
 	"license": "MIT",
@@ -52,6 +52,7 @@
 		"pack:check": "node scripts/pack-check.mjs",
 		"publish:npm": "node scripts/publish.mjs",
 		"diagrams:build": "node scripts/build-diagrams.mjs",
+		"generate:v131-tests": "node scripts/generate-v131-tests.mjs",
 		"clean": "node -e \"import('node:fs/promises').then((fs)=>Promise.all(['dist','coverage','junit.xml','test-results'].map((p)=>fs.rm(p,{recursive:true,force:true}))))\"",
 		"verify": "npm run format && npm run typecheck && npm run build && npm test && npm run smoke:cli"
 	},

@@ -40,10 +40,10 @@ General SAST tools can encode similar rules, but CipherSins is **purpose-built**
 
 - Consistent rule IDs (`CS-JWT-01` … `CS-RNG-02`)
 - Bad/good fixtures per rule
-- Numbered vitest cases per rule (**1722** tests at v1.3.0)
+- Numbered vitest cases per rule (**4291** tests at v1.3.1)
 - Linked rule documentation with fix guidance
 
-**Implemented at v1.3.0 (19 rules + full CLI):**
+**Implemented at v1.3.1 (19 rules + full CLI):**
 
 | Rule       | Severity | What it catches                                              |
 | ---------- | -------- | ------------------------------------------------------------ |

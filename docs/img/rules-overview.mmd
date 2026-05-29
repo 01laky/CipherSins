@@ -188,6 +188,12 @@ flowchart TB
 		AUTH2 -->|yes| R2FIND["createFinding() · high"]
 	end
 
+	subgraph QA["Edge-case coverage · v1.3.1"]
+		direction LR
+		V131["CS-V131-JWT/HASH/ENC/CMP-RNG exhaustive"]
+		MTRX["fixture matrix · overlap · reporting"]
+	end
+
 	subgraph REPORT["Finding output"]
 		direction LR
 		LOC["file · line · column"]
@@ -233,6 +239,8 @@ flowchart TB
 	H3FIND --> REPORT
 	H4FIND --> REPORT
 	H5FIND --> REPORT
+	RULES --> QA
+	V131 --> REPORT
 
 	classDef rule fill:#431407,stroke:#fb923c,stroke-width:2px,color:#ffedd5
 	classDef decision fill:#312e81,stroke:#a5b4fc,stroke-width:2px,color:#eef2ff
@@ -243,3 +251,6 @@ flowchart TB
 	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2,VALG,VNONE,VEXP,CIV,HARD,GCM,RAND,REUSE,DEP,PBK,PWD3,ITER,SCR,PWD4,WSCRYPT,AHASH,PWD5,WARGON,WEAK,ECB,EXP,NTS,SHORT,AUTH2,CIV2,CIV3 decision
 	class JCLEAN,CCLEAN,CSKIP clean
 	class LOC,MSG,DOC report
+	class V131,MTRX qa
+
+	classDef qa fill:#14532d,stroke:#4ade80,stroke-width:2px,color:#dcfce7

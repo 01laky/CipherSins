@@ -1,11 +1,11 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-1.3.0_stable-green)
+![core](https://img.shields.io/badge/core-1.3.1_stable-green)
 ![node](https://img.shields.io/badge/node-%3E%3D20-339933)
 ![rules](https://img.shields.io/badge/rules-19%2F19_implemented-9cf)
-![tests](https://img.shields.io/badge/tests-1722_passing-brightgreen)
+![tests](https://img.shields.io/badge/tests-4291_passing-brightgreen)
 [![ci](https://github.com/01laky/CipherSins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/CipherSins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-v1.3.0-green)
+![status](https://img.shields.io/badge/status-v1.3.1-green)
 
 **Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
 
@@ -13,7 +13,7 @@
 
 Catch `jwt.decode()` without `jwt.verify()` before it reaches production — **not another regex grep on `node_modules`**.
 
-**Status:** **`1.3.0`** — single npm package (`ciphersins`) with CLI + programmatic API + **GitHub Action** and **19 rules**.
+**Status:** **`1.3.1`** — single npm package (`ciphersins`) with CLI + programmatic API + **GitHub Action** and **19 rules**.
 
 ---
 
@@ -138,7 +138,7 @@ Library API: `npm install ciphersins`
 ### GitHub Action (CI)
 
 ```yaml
-- uses: 01laky/CipherSins/.github/actions/scan@v1.3.0
+- uses: 01laky/CipherSins/.github/actions/scan@v1.3.1
   with:
     path: ./src
     fail-on: high
@@ -298,7 +298,7 @@ pnpm verify
 | Command                            | Description                                                                                                                              |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke                                                                                  |
-| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/ENC/DEC/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1722** at v1.3.0) |
+| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/ENC/DEC/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**4291** at v1.3.1) |
 | `pnpm exec ciphersins scan [path]` | Run linked CLI                                                                                                                           |
 | `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                                                                                                    |
 | `pnpm format:fix`                  | Apply Prettier (tabs)                                                                                                                    |

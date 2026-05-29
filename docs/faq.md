@@ -24,7 +24,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## How many rules are implemented?
 
-**19/19 rules** at **1.3.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-JWT-05, CS-JWT-06, CS-CMP-01, CS-RNG-01, CS-RNG-02, CS-HASH-01, CS-HASH-02, CS-HASH-03, CS-HASH-04, CS-HASH-05, CS-ENC-01, CS-ENC-02, CS-ENC-03, CS-ENC-04, CS-DEC-01. See [rules index](./rules/README.md).
+**19/19 rules** at **1.3.1**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-JWT-05, CS-JWT-06, CS-CMP-01, CS-RNG-01, CS-RNG-02, CS-HASH-01, CS-HASH-02, CS-HASH-03, CS-HASH-04, CS-HASH-05, CS-ENC-01, CS-ENC-02, CS-ENC-03, CS-ENC-04, CS-DEC-01. See [rules index](./rules/README.md).
 
 ## Rule overlap matrix (v1.3)
 
@@ -96,7 +96,7 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | **CS-SUP-07–22**     | Suppression audit         |
 | **CS-REP-EXT-21–38** | JSON/SARIF audit          |
 
-Run `pnpm test` or `npm test` for the full suite (**1722** tests at v1.3.0). CI uses `npm run test:ci` (coverage + JUnit).
+Run `pnpm test` or `npm test` for the full suite (**4291** tests at v1.3.1). CI uses `npm run test:ci` (coverage + JUnit).
 
 ## How do I run CipherSins in CI?
 

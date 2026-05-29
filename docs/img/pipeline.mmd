@@ -45,6 +45,14 @@ flowchart TB
 		SORT --> SARIF
 	end
 
+	subgraph QA["Quality gate · v1.3.1"]
+		direction TB
+		GEN["generate-v131-tests.mjs"]
+		V131["CS-V131-* suites · 4291 vitest total"]
+		FIX["fixture matrix · overlap · suppressions · SARIF/json"]
+		GEN --> V131 --> FIX
+	end
+
 	subgraph OUTPUT["CLI output"]
 		direction LR
 		SUM["summary by severity"]
@@ -66,6 +74,7 @@ flowchart TB
 	SARIF --> SOUT
 	SUM --> PRETTY
 	SUM --> FAIL
+	RUN -.-> V131
 
 	classDef input fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe
 	classDef resolve fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#ede9fe
@@ -80,3 +89,6 @@ flowchart TB
 	class REG,CTX,RUN,SUP,FINDINGS rules
 	class SORT,JSON,SARIF report
 	class SUM,PRETTY,JOUT,SOUT,FAIL output
+	class GEN,V131,FIX qa
+
+	classDef qa fill:#14532d,stroke:#4ade80,stroke-width:2px,color:#dcfce7
