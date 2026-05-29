@@ -7,6 +7,10 @@
 	],
 	"compilerOptions": {
 		"noEmit": true,
-		"rootDir": "."
+		"rootDir": ".",
+		"baseUrl": ".",
+		"paths": {
+			"ciphersins": ["packages/ciphersins/src/index.ts"]
+		}
 	}
 }
